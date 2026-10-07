@@ -494,28 +494,6 @@ public:
 	//	}
 	//}
 
-	static void WriteFunction()
-	{
-		auto hScatter = mem.CreateScatterHandle();
-		while (true)
-		{
-
-			if (!Utils::ValidPtr(GameData.GameInstance))
-			{
-				//Utils::Log(1, "GameData.GameInstance: %p", GameData.GameInstance);
-				int Value = 2;
-				mem.AddScatterRead(hScatter, GameData.GameInstance + 0x17fd, (int*)&Value);
-				mem.ExecuteWriteScatter(hScatter);
-			}
-
-			Sleep(100);
-
-
-		}
-
-		mem.CloseScatterHandle(hScatter);
-	}
-
 	static void Init()
 	{
 		//Offset::Init();
@@ -618,7 +596,6 @@ public:
 		std::thread UpdateSegmentThread(Segment::Update);
 		std::thread UpdateWebRadarThread(WebRadar::Rundata);
 		std::thread recoilThread(Recoil::autoRecoil);
-		//std::thread WriteFunctionThread(WriteFunction);
 		UpdatePIDThread.join();
 
 	}

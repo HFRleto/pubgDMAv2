@@ -1863,7 +1863,6 @@ public:
     {
         bool AimAndShot = false;
         auto hScatter = mem.CreateScatterHandle();
-        auto hWriteScatter = mem.CreateScatterHandle();
         Throttler Throttlered;
         FName FMouseX = { GameData.Offset["MouseX"] };
         FName FMouseY = { GameData.Offset["MouseY"] };
@@ -2984,6 +2983,5 @@ public:
 
         }
         mem.CloseScatterHandle(hScatter);
-        mem.CloseScatterHandle(hWriteScatter);
     }
 };
