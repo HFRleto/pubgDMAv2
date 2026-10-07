@@ -1,0 +1,50 @@
+# ============================================================
+#  KAKA-PRO (kaka 二改)  .gitignore
+#  Principe : ne garder que les sources, en-têtes et bibliothèques nécessaires
+#  à la compilation. Le dossier de sortie x64/ est entièrement régénérable
+#  (voir BUILD.md) et n'est pas versionné.
+# ============================================================
+
+# ---------- 构建中间产物（VS 中间目录 / 目标文件 / 调试符号） ----------
+/Jax Kane/
+/x64/
+/Microsoft/
+*.obj
+*.iobj
+*.ipdb
+*.pdb
+*.ilk
+*.tlog
+
+# ---------- 日志、调试输出、运行时转储 ----------
+/*.log
+/*_err.log
+/*.bin
+/build_env_check.ps1
+/build_env_report.txt
+/msbuild_out.txt
+/run_out.txt
+/run_out.txt.err
+/imgui.ini
+/*.aps
+
+# ---------- 未参与编译的备份文件 / 压缩包 ----------
+/test.cpp
+/struct.h
+/Source/Hack/Hack.rar
+/Source/Common/VisibleScene - 副本.h
+/Include/*.rar
+/Include/*.zip
+
+# ---------- 根目录开发期副本与脚本 ----------
+/Key.ini
+/lic.ini
+/VMProtectSDK*.dll
+/VMProtectSDK*.lib
+/check_deploy_dlls.ps1
+/shell_test.txt
+
+# ---------- VS 本地设置 ----------
+.vs/
+*.VC.db
+*.suo
