@@ -1,0 +1,205 @@
+RESUME DES MODIFICATIONS
+========================
+Version du jeu visee : 2609.1.3.1          Date : 8 octobre 2026
+
+Le plus simple pour reporter ces modifications sur un autre PC est de COPIER
+les fichiers listes en section 1. La section 2 decrit chaque changement pour
+pouvoir le refaire a la main si les fichiers de l'autre PC ont diverge.
+
+
+1. FICHIERS A COPIER
+--------------------
+
+ATTENTION : depuis la traduction de l'interface (2.9 et 2.10), une quinzaine de fichiers
+de Source\ sont touches et 23 images sont renommees. Le plus sur est de copier en entier :
+  le dossier Source\
+  le dossier Assets\image\Weapon\   (supprimer d'abord celui de l'autre PC : les images
+                                     au nom chinois y ont ete renommees)
+  le dossier tools\
+  Media.vcxproj et Main.cpp
+
+Modifies avant la traduction :
+  Media.vcxproj
+  Main.cpp
+  Source\Common\Offset.h
+  Source\Common\Data.h
+  Source\Common\Config.h
+  Source\Hack\Decrypt.cpp
+  Source\Hack\Hack.h
+  Source\Hack\Items.h
+  Source\Hack\KeyState.h
+  Source\Hack\WebSocketClient.h
+  Source\Overlay\Menu.h
+  Source\Overlay\Texture.cpp
+
+Nouveaux (dossier tools\) :
+  tools\LISEZMOI.md          mode d'emploi des outils
+  tools\dumper.py            script DMA de recherche d'offsets (copie corrigee de offsetTest2.txt)
+  tools\sdk_offsets.py       recalcul des offsets depuis un dump SDK
+  tools\sdkindex.py          index du SDK, utilise par sdk_offsets.py
+  tools\debug_run.ps1        compile + lance sous debogueur + affiche la pile en cas de plantage
+  tools\offsets_report.txt   dernier rapport de sdk_offsets.py
+  tools\dumper_out\          dernier resultat de dumper.py (offsets.hpp, offsets.json, run.log)
+
+Rien a copier dans x64\Release : tout y est regenere par la compilation.
+
+
+2. DETAIL DES CHANGEMENTS
+-------------------------
+
+2.1  Media.vcxproj : compilation en UTF-8
+     Dans les deux lignes <AdditionalOptions>, ajout de /utf-8 :
+       <AdditionalOptions>/utf-8 /FS /bigobj %(AdditionalOptions)</AdditionalOptions>
+       <AdditionalOptions>/utf-8 /FS %(AdditionalOptions)</AdditionalOptions>
+     Raison : sans cette option, sur un Windows non chinois, les textes chinois du
+     code (noms d'images, noms d'objets) sont convertis en "?" a la compilation.
+
+2.2  Source\Overlay\Texture.cpp : plantage au demarrage (CORRECTIF PRINCIPAL)
+     Symptome : la console s'affiche puis tout se ferme au bout de quelques secondes
+     (exception 0xc0000409 dans le journal d'evenements Windows).
+     Cause : Texture::LoadTextures ecrivait le chemin de chaque image dans un flux
+     ("ss << file"), ce qui leve une exception sur les fichiers au nom chinois quand
+     Windows n'est pas en chinois.
+     Correctif :
+       - en tete du fichier, apres "#define STB_IMAGE_IMPLEMENTATION" :
+             #define STBI_WINDOWS_UTF8
+       - la boucle de LoadTextures utilise file.path().generic_u8string() pour
+         construire la cle, et l'extension est prise apres le dernier point.
+
+2.3  Source\Hack\Items.h : corruption memoire dans l'inventaire
+     Vers la ligne 64, dans GetWeaponAttachedItems :
+       avant : (uint64_t*)&Item.second.Count
+       apres : (int*)&Item.second.Count
+     Raison : Count est un int (4 octets) ; la lecture de 8 octets debordait du bloc
+     alloue. Bug du code d'origine, independant des offsets.
+
+2.4  Source\Hack\Decrypt.cpp : fonction Decrypt::CIndex
+       DWORD Decrypt::CIndex(DWORD value)
+       {
+           if (!value)
+               return 0;
+
+           return ((value << 9) & 0xFFFF0000) ^
+               _rotr(value ^ 0xD286E6F2, 7) ^ 0x4CC9D1B1;
+       }
+     Source : offsetTest.txt, confirme par le script DMA (CIndexHi).
+
+2.5  Source\Common\Offset.h : offsets mis a jour
+     Fichier a copier tel quel. Ce qui a ete fait :
+       - commentaires chinois traduits en francais ;
+       - 58 entrees de la map jamais lues par le programme mises en commentaire,
+         avec leurs constantes, marquees "// inutilise" ;
+       - valeurs passees en 2609, la source etant notee sur chaque ligne :
+             // 2609 : SDK          trouve dans le dump SDK
+             // 2609 : offsetTest   premier fichier texte
+             // 2609 : script       script DMA (tools\dumper.py)
+             // 2609 : NamesDump    indice de nom (MouseX, MouseY)
+             // 2609 : deduit...    calcule, a verifier
+             // PAS A JOUR (valeur 2605)
+       - cles ajoutees a la map car lues par le code mais jamais enregistrees :
+             SkeletalMesh, Skeleton, SkeletalSockets, SkeletalSocketName,
+             WheelOldLocation, WheelVelocity
+       - constante ajoutee : GObjectsCount.
+     Etat : 159 cles lues par le programme ; 129 a jour, 13 a verifier,
+     1 fausse (GameState), 16 en 2605.
+
+2.6  Source\Hack\Hack.h : journaux
+       - deux fonctions ajoutees au debut de la classe Hack :
+             SceneName(Scene)          nom lisible d'une scene
+             LogPointerChain(bool)     affiche la chaine de pointeurs
+       - appels a LogPointerChain dans Update() : LogPointerChain(false) dans le
+         bloc "hors partie", LogPointerChain(true) apres la lecture groupee ;
+       - dans Init() : journaux [OFFSET] apres Offset::Sever_Init(), [INIT] apres
+         EntityInit() et avant le lancement des threads ;
+       - tous les messages chinois de la console remplaces par du francais
+         ([SCENE], [PROCESSUS], [DMA], [OFFSET]).
+
+2.7  Autres messages de console traduits
+       Main.cpp                         titre de la console, message de demarrage
+       Source\Hack\KeyState.h           3 messages ([INIT], [OVERLAY])
+       Source\Hack\WebSocketClient.h    2 messages ([RADAR WEB])
+
+2.8  Langue du menu : anglais par defaut
+       Source\Overlay\Menu.h     inline bool Languages = 0;          (etait 1)
+       Source\Common\Data.h      int CurrentLanguage = 0;            (etait 1)
+       Source\Common\Config.h    GameData.Config.Project.CurrentLanguage = 0;
+                                 (fin de Config::Load, etait force a 1)
+
+
+2.9  Source\Utils\Utils.h : conversions de texte
+       - StringToUTF8 renvoie maintenant la chaine telle quelle ;
+       - UnicodeToAnsi convertit en CP_UTF8 au lieu de CP_ACP (2 lignes).
+     Raison : avec /utf-8 tout le texte du programme est deja en UTF-8. L'ancienne
+     conversion supposait un Windows chinois et rendait illisibles la ligne d'alerte du
+     bas de l'ecran, les noms d'objets, de vehicules et les infos des joueurs.
+
+2.10 Interface traduite en anglais
+     tools\traductions_zh_en.json contient 382 textes chinois et leur traduction ;
+     tools\appliquer_traductions.py les remplace dans les sources (630 lignes) :
+       Source\Common\Entitys.cpp, Constant.h       noms d'objets, de vehicules, rangs
+       Source\Overlay\ESP.h, Menu.h, Overlay.cpp    affichage en jeu, menu, chemins d'icones
+       Source\Hack\Hack.h, PlayerLists.h, Vehicles.h
+       Source\Utils\KmBoxEnhanced.h, KmBoxFix.h, ue4math\xinjiegou.h
+     Les noms d'objets servent aussi de cles (comparaisons, noms d'icones) : ils sont
+     remplaces a l'identique partout, et 23 images de Assets\image\Weapon sont renommees
+     (par exemple l'image de la grenade devient "Grenade.png").
+     Pour refaire l'operation sur des sources d'origine :
+         python -I tools\appliquer_traductions.py          (apercu)
+         python -I tools\appliquer_traductions.py apply
+     Non traduits : la fenetre de connexion (jamais affichee), le radar web
+     (Webpageradar.h), les textes chinois des lignes qui ont deja une version anglaise.
+
+     Ligne d'alerte en bas de l'ecran (ESP.h) :
+         | Within Xm: N enemies | closest Ym | team Z |
+       verte = ennemis dans le rayon, aucun a moins de 50 m ; rouge = au moins un a moins de 50 m.
+
+
+3. LIRE LA CONSOLE
+------------------
+
+  [OFFSET]     offsets charges au demarrage
+  [DMA]        etat de la carte DMA
+  [PROCESSUS]  jeu detecte, PID et adresse de base
+  [SCENE]      changements de scene (RechercheProcessus / Lobby / EnPartie) et carte
+  [CHAINE]     valeur de chaque pointeur ; "(INVALIDE)" designe l'offset a corriger
+  [ETAT]       entites, joueurs, carte, champ de vision ; toutes les 10 s en partie
+
+Etat constate en jeu (terrain d'entrainement Range_Main) :
+  - chaine valide de UWorld jusqu'a la camera ; environ 1470 entites, 15 joueurs ;
+  - GameState INVALIDE : la valeur 0x278 est fausse, c'est le seul maillon casse.
+
+
+4. PREREQUIS SUR L'AUTRE PC
+---------------------------
+
+  Compilation : Visual Studio 2022, charge "Developpement Desktop en C++" (voir BUILD.md).
+      MSBuild.exe "Jax Kane.sln" /p:Configuration=Release /p:Platform=x64 /m
+
+  Script DMA (facultatif) : Python 3 en 64 bits, puis
+      python -m pip install memprocfs iced-x86
+      python tools\dumper.py --no-dump --json -o tools\dumper_out
+
+  Debogage (facultatif) : cdb.exe, fourni avec les "Debugging Tools for Windows"
+  du SDK Windows.
+      powershell -ExecutionPolicy Bypass -File tools\debug_run.ps1 -Seconds 60
+
+  Les chemins de MSBuild et de cdb sont ecrits en dur en tete de tools\debug_run.ps1 ;
+  a adapter si Visual Studio n'est pas l'edition Community.
+
+
+5. CE QUI RESTE A FAIRE
+-----------------------
+
+  - GameState : valeur fausse. Sans lui : pas de zones, pas de nombre d'equipes en
+    vie, pas de PlayerArray.
+  - 16 offsets encore en valeur 2605 :
+      PlayerStatusType, PlayerStatistics, SelectMinimapSizeIndex, ItemID,
+      DroppedItemGroup, DroppedItemGroupUItem, CurrentAmmoData, FiringAttachPoint,
+      AttachedStaticComponentMap, WeaponAttachmentData, ElapsedCookingTime,
+      TimeSeconds, ExplodeState, MortarLocation, MortarRotation, MapGrid_Map
+  - DormantCharacterClientList : lue par Players.h, aucune valeur connue.
+  - 13 offsets a verifier en jeu (cherchez "verifier" ou "douteux" dans Offset.h).
+  - Interface : restent en chinois la fenetre de connexion (desactivee) et le radar web.
+  - Assets\image\Weapon contient encore une image au nom chinois, doublon de
+    "Bluezone Grenade.png" ; elle n'est plus utilisee.
+  - L'overlay n'a pas ete controle visuellement.

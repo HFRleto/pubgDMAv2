@@ -243,14 +243,17 @@ private:
 
 // ============================================================
 //  CIndex - hardcoded local, no cloud delivery
-//  expr: ((((v ^ 0x7360F24) << 25) | (((v ^ 0x7360F24) >> 7) & 0x1FF0000)) ^ _rotr(v ^ 0x7360F24, 23) ^ 0xB621EC05)
-//  ver: 2605.1.2.1  date: 2026-05-27
+//  expr: (((v << 9) & 0xFFFF0000) ^ _rotr(v ^ 0xD286E6F2, 7) ^ 0x4CC9D1B1)
+//  ver: 2609.1.3.1  source: offsetTest.txt
 // ============================================================
 
 DWORD Decrypt::CIndex(DWORD value)
 {
-    return ((value << 23) | ((value >> 9) & 0x7F0000)) ^
-        _rotr(value ^ 0xBBEEADB7, 25) ^ 0xC5238AB3;
+    if (!value)
+        return 0;
+
+    return ((value << 9) & 0xFFFF0000) ^
+        _rotr(value ^ 0xD286E6F2, 7) ^ 0x4CC9D1B1;
 }
 
 // 其他 Decrypt 方法

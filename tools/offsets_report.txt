@@ -1,0 +1,163 @@
+cle                            ancien     nouveau    methode  detail
+Health                         0xA50      ?          INCONNU  0x9C0 via WeaponProcessor (dessous) -> zone non reflechie (ATslCharacterBase) ; 0xA20 via Gender (dessus) -> zone non reflechie (ATslCharacterBase)
+bEncryptedHealth               0xA65      ?          INCONNU  0x9D5 via WeaponProcessor (dessous) -> zone non reflechie (ATslCharacterBase) ; 0xA35 via Gender (dessus) -> zone non reflechie (ATslCharacterBase)
+EncryptedHealthOffset          0xA64      ?          INCONNU  0x9D4 via WeaponProcessor (dessous) -> zone non reflechie (ATslCharacterBase) ; 0xA34 via Gender (dessus) -> zone non reflechie (ATslCharacterBase)
+DecryptedHealthOffset          0xA60      ?          INCONNU  0x9D0 via WeaponProcessor (dessous) -> zone non reflechie (ATslCharacterBase) ; 0xA30 via Gender (dessus) -> zone non reflechie (ATslCharacterBase)
+GroggyHealth                   0x1118     0x18C0     SDK      ATslCharacter::DBNOHealth | offsetTest OK
+DecryptedHealthOffsets0        0xCEC7A590 ?          INCONNU  
+DecryptedHealthOffsets1        0x9B63B26A ?          INCONNU  
+DecryptedHealthOffsets2        0xCA150EA5 ?          INCONNU  
+DecryptedHealthOffsets3        0x6A38488D ?          INCONNU  
+DecryptedHealthOffsets4        0xA911D0A  ?          INCONNU  
+DecryptedHealthOffsets5        0x23DDA248 ?          INCONNU  
+DecryptedHealthOffsets6        0x9458DC8  ?          INCONNU  
+DecryptedHealthOffsets7        0xA521B921 ?          INCONNU  
+DecryptedHealthOffsets8        0xBA27A58  ?          INCONNU  
+DecryptedHealthOffsets9        0xB0EF6A87 ?          INCONNU  
+DecryptedHealthOffsets10       0xE2757FB9 ?          INCONNU  
+DecryptedHealthOffsets11       0x878ADB16 ?          INCONNU  
+DecryptedHealthOffsets12       0xBD0AAFD5 ?          INCONNU  
+DecryptedHealthOffsets13       0x6A938D07 ?          INCONNU  
+DecryptedHealthOffsets14       0x8D099E38 ?          INCONNU  
+DecryptedHealthOffsets15       0xEDD82AB0 ?          INCONNU  
+XenuineDecrypt                 0x10565A28 0x10EC3828 EXTERNE  offsetTest.txt
+UWorld                         0x11DA1828 0x128271E8 EXTERNE  offsetTest.txt
+GNames                         0x1202A4B0 0x12ABD1B0 EXTERNE  offsetTest.txt
+GNamesPtr                      0x0        0x10       EXTERNE  offsetTest.txt
+ChunkSize                      0x3E74     0x4164     EXTERNE  offsetTest.txt
+ObjID                          0xC        0x28       SDK      UObject::NameIndex_enc | offsetTest OK
+GameInstance                   0x888      ?          INCONNU  0x908 via CurrentLevel (dessous) -> zone non reflechie (UWorld)
+LocalPlayer                    0x70       ?          INCONNU  aucune ancre dans UGameInstance
+Actors                         0x188      0xB0       EXTERNE  offsetTest.txt
+CurrentLevel                   0x850      0x8D0      SDK      UWorld::CurrentLevel | offsetTest OK
+PlayerController               0x38       0x38       EXTERNE  offsetTest.txt
+AcknowledgedPawn               0x4B0      0x4A8      SDK      APlayerController::AcknowledgedPawn | offsetTest OK
+PlayerCameraManager            0x4D8      0x4D0      SDK      APlayerController::PlayerCameraManager | offsetTest OK
+GameState                      0x3E0      ?          INCONNU  0x460 via CurrentLevel (dessus) -> zone non reflechie (UWorld)
+NumAliveTeams                  0x4B8      0x4E0      SDK      ATslGameStateBase::NumAliveTeams
+ViewTarget                     0x1070     0x1090     SDK      APlayerCameraManager::ViewTarget
+CameraCacheLocation            0x1090     0x474      SDK      APlayerCameraManager::_0cb2c63b38 . F_3663b8ac95::_a02dd76252 . F_feffdbe66f::Location | offsetTest OK
+CameraCacheRotation            0x162C     0x464      SDK      APlayerCameraManager::_0cb2c63b38 . F_3663b8ac95::_a02dd76252 . F_feffdbe66f::Rotation | offsetTest OK
+CameraCacheFOV                 0x1644     0x470      SDK      APlayerCameraManager::_0cb2c63b38 . F_3663b8ac95::_a02dd76252 . F_feffdbe66f::FOV | offsetTest OK
+LastTeamNum                    0x1190     0x1E10     SDK      ATslCharacter::LastTeamNum | offsetTest OK
+TeamNumber                     0x9A8      0xB80      SDK      ATslPlayerStateBase::TeamNumber
+PlayerArray                    0x430      0x418      SDK      AGameStateBase::PlayerArray
+AccountId                      0x578      0xB70      SDK      ATslPlayerStateBase::AccountId
+PlayerName                     0x430      0x420      SDK      APlayerState::PlayerName
+PlayerStatusType               0x440      ?          INCONNU  0x430 via PlayerName (dessous) -> float Score ; 0xA38 via AccountId (dessus) -> zone non reflechie (ATslPlayerStateBase)
+SquadMemberIndex               0x5B4      0xBA8      SDK      ATslPlayerStateBase::SquadMemberIndex
+PlayerState                    0x448      0x428      SDK      APawn::PlayerState
+PlayerStatistics               0xA2C      ?          INCONNU  0xB84 via CharacterClanInfo (dessous) -> zone non reflechie (ATslPlayerStateBase)
+DamageDealtOnEnemy             0x80C      0xAE4      SDK      ATslPlayerStateBase::DamageDealtOnEnemy
+SpectatedCount                 0x2730     0x16C4     SDK      ATslCharacter::SpectatedCount | offsetTest OK
+PartnerLevel                   0x6C6      0x630      SDK      ATslPlayerStateBase::PartnerLevel
+SurvivalTier                   0xCE8      ?          INCONNU  0xE40 via CharacterClanInfo (dessous) -> au milieu de F_f9ed204c58 PubgIdData
+SurvivalLevel                  0xCEC      ?          INCONNU  0xE44 via CharacterClanInfo (dessous) -> au milieu de F_f9ed204c58 PubgIdData
+CharacterClanInfo              0x9B0      0xB08      SDK      ATslPlayerStateBase::ClanInfo
+MyHUD                          0x4E8      0x4C8      SDK      APlayerController::MyHUD
+bShowMouseCursor               0x678      0x658      SDK      APlayerController::bShowMouseCursor
+BlockInputWidgetList           0x5D0      0x5C8      SDK      ATslBaseHUD::_347c4cf7ef
+ComponentLocation              0x300      0x330      EXTERNE  offsetTest.txt
+ComponentToWorld               0x2F0      0x320      EXTERNE  offsetTest.txt
+CharacterState                 0x1698     0x114C     SDK      ATslCharacter::CharacterState
+CharacterName                  0x2B10     0x16E0     SDK      ATslCharacter::CharacterName | offsetTest OK
+CharacterMovement              0x4A0      0x598      SDK      ACharacter::CharacterMovement
+WorldToMap                     0x844      ?          INCONNU  0x8C4 via CurrentLevel (dessus) -> zone non reflechie (UWorld)
+LayoutData                     0x40       0x40       SDK      UCanvasPanelSlot::LayoutData
+Offsets                        0x0        0x0        SDK      FAnchorData::Offsets
+Alignment                      0x20       0x20       SDK      FAnchorData::Alignment
+Visibility                     0xA9       0xA9       SDK      UWidget::Visibility
+SelectMinimapSizeIndex         0x5C8      ?          INCONNU  
+Slot                           0x38       0x38       SDK      UWidget::Slot
+WidgetStateMap                 0x558      0x550      SDK      ATslBaseHUD::_87003fe56c
+FeatureRepObject               0xCF0      0xD10      SDK      ATslGameStateBase::_e22665d40d
+SafetyZonePosition             0xB0       0xB0       SDK      U_89d28cc6e1::SafetyZonePosition
+SafetyZoneRadius               0xBC       0xBC       SDK      U_89d28cc6e1::SafetyZoneRadius
+BlueZoneRadius                 0xCC       0xCC       SDK      U_89d28cc6e1::BluezoneRadius
+BlueZonePosition               0xC0       0xC0       SDK      U_89d28cc6e1::_69c487fd3b
+Mesh                           0x480      0x5B0      SDK      ACharacter::Mesh | offsetTest OK
+StaticMesh                     0xB08      0xAE8      SDK      UStaticMeshComponent::StaticMesh | offsetTest OK
+RootComponent                  0x1D0      0x3E8      SDK      AActor::RootComponent | offsetTest OK
+LastUpdateVelocity             0x3E0      ?          INCONNU  aucune ancre dans UCharacterMovementComponent
+ComponentVelocity              0x234      0x230      SDK      USceneComponent::ComponentVelocity
+Eyes                           0x75C      ?          INCONNU  0x74C via bAlwaysCreatePhysicsState (dessous) -> zone non reflechie (UPrimitiveComponent) ; 0x73C via AnimScriptInstance (dessus) -> zone non reflechie (UPrimitiveComponent)
+bAlwaysCreatePhysicsState      0x4A8      0x498      SDK      UPrimitiveComponent::bAlwaysCreatePhysicsState | offsetTest OK
+PlayerInput                    0x568      0x548      SDK      APlayerController::PlayerInput
+InputAxisProperties            0x138      ?          INCONNU  aucune ancre dans UPlayerInput
+MouseX                         0x5016     0x5212     NOMS     indice FName dans NamesDump.txt
+MouseY                         0x5017     0x5213     NOMS     indice FName dans NamesDump.txt
+AnimScriptInstance             0xE50      0xE30      SDK      USkeletalMeshComponent::AnimScriptInstance
+PreEvalPawnState               0x638      0x658      SDK      UTslAnimInstance::PreEvalPawnState
+AimOffsets                     0x1C78     0x1BD0     SDK      ATslCharacter::AimOffsets
+VehicleMovement                0x488      0x470      SDK      AWheeledVehicle::VehicleMovement
+VehicleRiderComponent          0x2110     0x21B0     SDK      ATslCharacter::VehicleRiderComponent
+ReplicatedMovement             0xD0       0x80       SDK      AActor::ReplicatedMovement
+LastVehiclePawn                0x270      0x270      SDK      UVehicleRiderComponent::_2d021c4cd2
+SeatIndex                      0x230      0x238      SDK      UVehicleRiderComponent::SeatIndex
+Wheels                         0x328      0x330      SDK      UWheeledVehicleMovementComponent::Wheels
+WheelLocation                  0x100      0x100      SDK      UVehicleWheel::Location
+DampingRate                    0x54       0x54       INFERE   0x54 via WheelLocation (dessus) -> float _fbf7da4818
+ShapeRadius                    0x48       0x48       INFERE   0x48 via WheelLocation (dessus) -> float _9a52d91562
+VehicleCommonComponent         0xB50      0xB30      SDK      ATslWheeledVehicle::VehicleCommonComponent
+FloatingComponent              0x4F8      0x4E0      SDK      ATslFloatingVehicle::VehicleCommonComponent
+VehicleFuel                    0x2E0      0x2F8      SDK      U_7742b76aa6::Fuel
+VehicleFuelMax                 0x2E4      0x2FC      SDK      U_7742b76aa6::_a283705d70
+VehicleHealth                  0x2D8      0x2F0      SDK      U_7742b76aa6::Health
+VehicleHealthMax               0x2DC      0x2F4      SDK      U_7742b76aa6::_788fe054fb
+ItemID                         0x240      ?          INCONNU  
+ItemTable                      0xB0       ?          INCONNU  0xB0 via InventoryItemTagItemCount (dessous) -> zone non reflechie (UItem)
+ItemPackageItems               0x598      0x580      SDK      AItemPackage::Items
+DroppedItemGroup               0xF8       ?          INCONNU  0xA8 via ReplicatedMovement (dessous) -> au milieu de FRepMovement ReplicatedMovement ; 0x310 via RootComponent (dessus) -> au milieu de FMulticastScriptDelegate OnTakeAnyDamage
+DroppedItem                    0x478      0x470      SDK      ADroppedItem::Item
+DroppedItemGroupUItem          0x870      ?          INCONNU  
+WeaponProcessor                0x9E8      0x958      SDK      ATslCharacterBase::WeaponProcessor
+CurrentAmmoData                0xCA8      ?          INCONNU  0x1030 via ScopingAttachPoint (dessous) -> au milieu de F_894f9941cb _1ab7514ac1 ; 0xCF0 via WeaponTrajectoryData (dessus) -> zone non reflechie (ATslWeapon_Gun)
+CurrentWeaponIndex             0x319      ?          INCONNU  0x321 via EquippedWeapons (dessous) -> hors de la classe
+EquippedWeapons                0x208      0x210      SDK      U_d9ef1fe703::_c477800759
+WeaponTrajectoryData           0x11D8     0x1220     SDK      ATslWeapon_Trajectory::WeaponTrajectoryData
+TrajectoryGravityZ             0x3BC      ?          INCONNU  0x5D4 via RootComponent (dessous) -> au milieu de F_76e88772fe WeaponConfig ; 0x614 via Mesh3P (dessus) -> au milieu de F_76e88772fe WeaponConfig
+TrajectoryConfig               0x108      0x108      SDK      UWeaponTrajectoryData::_9d0706cb2c
+BallisticCurve                 0x28       0x28       SDK      F_f033e1f2e0::_ced517632a
+FloatCurves                    0x38       ?          INCONNU  classe UCurveVector absente du SDK
+Keys                           0x60       ?          INCONNU  
+WeaponConfig_WeaponClass       0x72D      0x720      SDK      ATslWeapon::WeaponConfig . F_76e88772fe::_37178ea754
+Mesh3P                         0x820      0xA78      SDK      ATslWeapon::_4ca7334f07
+FiringAttachPoint              0x8E0      ?          INCONNU  0x8D0 via AttachedItems (dessous) -> FName _7328595a06 ; 0xC68 via ScopingAttachPoint (dessus) -> zone non reflechie (ATslWeapon_Gun)
+AttachedStaticComponentMap     0x1508     ?          INCONNU  <^TMap<.*EWeaponAttachmentSlotID.*, U\w*Component\*>$> introuvable dans tout le SDK
+AttachedItems                  0x878      0x868      SDK      ATslWeapon::AttachedItems
+WeaponAttachmentData           0x128      0x290      AUTO     F_13e6446820::WeaponAttachmentData
+ScopingAttachPoint             0xB50      0xED8      SDK      ATslWeapon_Gun::ScopingAttachPoint
+ElapsedCookingTime             0xB30      ?          INCONNU  
+InventoryFacade                0x1F00     0x1290     SDK      ATslCharacter::InventoryFacade
+Inventory                      0xB0       0x408      SDK      AInventoryFacade::Inventory
+InventoryItems                 0x6A8      0x600      SDK      AInventory::Items
+InventoryItemTagItemCount      0x40       0x40       SDK      UItem::StackCount
+ControlRotation_CP             0x654      0x674      SDK      UTslAnimInstance::ControlRotation_CP
+RecoilADSRotation_CP           0x824      ?          INCONNU  0x844 via bIsReloading_CP (dessous) -> zone non reflechie (UTslAnimInstance) ; 0x82C via bIsScoping_CP (dessus) -> float RecoilPlayStartTime_CP
+LeanLeftAlpha_CP               0x69C      0x6BC      SDK      UTslAnimInstance::LeanLeftAlpha_CP
+LeanRightAlpha_CP              0x6A0      0x6C0      SDK      UTslAnimInstance::LeanRightAlpha_CP
+bIsScoping_CP                  0x85D      0x865      SDK      UTslAnimInstance::bIsScoping_CP
+bIsReloading_CP                0x73D      0x75D      SDK      UTslAnimInstance::bIsReloading_CP
+StaticSockets                  0xC8       0xC8       SDK      UStaticMesh::Sockets
+StaticSocketName               0x30       0x30       SDK      U_9d85998ee1::SocketName
+StaticRelativeLocation         0x38       0x38       SDK      U_9d85998ee1::RelativeLocation
+StaticRelativeRotation         0x44       0x44       SDK      U_9d85998ee1::RelativeRotation
+StaticRelativeScale            0x50       0x50       SDK      U_9d85998ee1::RelativeScale
+AntiCheatCharacterSyncManager  0x1168     ?          INCONNU  0x1148 via bShowMouseCursor (dessous) -> au milieu de TSet<FKey> _70a62364fc
+TimeSeconds                    0x954      ?          INCONNU  0x9D4 via CurrentLevel (dessous) -> zone non reflechie (UWorld)
+TimeTillExplosion              0x844      0x834      SDK      ATslProjectile::TimeTillExplosion
+ExplodeState                   0x648      ?          INCONNU  <^EProjectileExplodeState$> introuvable dans tout le SDK
+MortarLocation                 0xB0       ?          INCONNU  
+MortarRotation                 0x540      ?          INCONNU  
+TrainingMapGrid                0x5E0      ?          INCONNU  
+MapGrid_Map                    0x4A8      ?          INCONNU  
+Gender                         0xB70      0xB40      SDK      AMutableCharacter::Gender | offsetTest OK
+PubgIdData                     -          0xE38      SDK      ATslPlayerStateBase::PubgIdData
+SkeletalMesh                   -          0xAD8      SDK      USkinnedMeshComponent::SkeletalMesh | offsetTest OK
+Skeleton                       -          0x50       SDK      USkeletalMesh::Skeleton
+SkeletalSockets                -          0x198      SDK      USkeleton::Sockets
+SkeletalSocketName             -          0x30       SDK      USkeletalMeshSocket::SocketName
+WheelOldLocation               -          0x10C      SDK      UVehicleWheel::OldLocation
+WheelVelocity                  -          0x118      SDK      UVehicleWheel::Velocity
+
+AUTO=1  EXTERNE=9  INCONNU=52  INFERE=2  NOMS=2  SDK=94

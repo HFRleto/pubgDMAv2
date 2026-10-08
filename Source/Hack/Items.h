@@ -61,7 +61,7 @@ public:
             for (auto& Item : CacheInventoryItemInfos)
             {
                 mem.AddScatterRead(hScatter, Item.first + GameData.Offset["ItemTable"], (uint64_t*)&Item.second.ItemTable);
-                mem.AddScatterRead(hScatter, Item.first + GameData.Offset["InventoryItemTagItemCount"], (uint64_t*)&Item.second.Count);
+                mem.AddScatterRead(hScatter, Item.first + GameData.Offset["InventoryItemTagItemCount"], (int*)&Item.second.Count);
             }
             mem.ExecuteReadScatter(hScatter);
             for (auto& Item : CacheInventoryItemInfos)

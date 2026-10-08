@@ -356,7 +356,7 @@ private:
                     std::lock_guard<std::mutex> lock(mutex);
                     pinStatus = PinStatus::Verified;
                     //std::cout << "[INFO] PIN verified successfully" << std::endl;
-                    Utils::Log(1, U8("PIN验证成功"));
+                    Utils::Log(1, U8("[RADAR WEB] Code PIN accepté."));
                 }
                 pinVerificationCv.notify_one();
             }
@@ -365,7 +365,7 @@ private:
                     std::lock_guard<std::mutex> lock(mutex);
                     pinStatus = PinStatus::Error;
                     //std::cout << "[ERROR] PIN verification failed" << std::endl;
-                    Utils::Log(2, U8("PIN验证失败"));
+                    Utils::Log(2, U8("[RADAR WEB] Code PIN refusé."));
                 }
                 pinVerificationCv.notify_one();
             }

@@ -1,4 +1,6 @@
 ﻿#define STB_IMAGE_IMPLEMENTATION
+// les noms de fichiers sont passes en UTF-8 : certaines images ont un nom chinois
+#define STBI_WINDOWS_UTF8
 
 #include <Utils/stb_image.h>
 
@@ -15,19 +17,24 @@ std::unordered_map<std::string, ImGuiTextureInfo> GImGuiTextureMap = {};
 
 void Texture::LoadTextures(ID3D11Device* g_pd3dDevice, const std::string folderPath, bool removeColor) {
     for (auto& file : std::filesystem::recursive_directory_iterator(folderPath)) {
-        std::stringstream ss;
-        ss << file;
+        if (!file.is_regular_file())
+            continue;
 
-        if (Utils::Contains(TEXTURE_EXTENSIONS, ss.str().substr(ss.str().length() - 4, 3))) {
-            ImGuiTextureInfo Info;
-            std::string key = ss.str().substr(1, ss.str().length() - 2);
-            bool Ret = Texture::LoadTextureFromFile(g_pd3dDevice, key.c_str(), &Info.Texture, &Info.Width, &Info.Height, removeColor);
-            IM_ASSERT(Ret);
-            
-            key = Utils::ReplaceAll(key.c_str(), "\\\\", "/");
-            if (removeColor) key += "_RemoveColor";
-            GImGuiTextureMap[key] = Info;
-        }
+        // generic_u8string : la conversion vers la page de codes du systeme leve une exception
+        // sur les noms chinois quand Windows n'est pas en chinois
+        const std::u8string u8Path = file.path().generic_u8string();
+        std::string key(u8Path.begin(), u8Path.end());
+
+        const size_t dot = key.find_last_of('.');
+        if (dot == std::string::npos || !Utils::Contains(TEXTURE_EXTENSIONS, key.substr(dot + 1)))
+            continue;
+
+        ImGuiTextureInfo Info;
+        bool Ret = Texture::LoadTextureFromFile(g_pd3dDevice, key.c_str(), &Info.Texture, &Info.Width, &Info.Height, removeColor);
+        IM_ASSERT(Ret);
+
+        if (removeColor) key += "_RemoveColor";
+        GImGuiTextureMap[key] = Info;
     }
 }
 

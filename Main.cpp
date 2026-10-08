@@ -51,7 +51,7 @@ namespace
 void SetConsoleStyle()
 {
 	SetConsoleOutputCP(CP_UTF8);
-	SetConsoleTitle(L"\u6B22\u8FCE\u4F7F\u7528\u54D2\u54D2\u54D2\uFF0C\u516C\u76CA\u8F6F\u4EF6\uFF0C\u4EC5\u4F9B\u5A31\u4E50\u3002\u4E00\u5207\u540E\u679C\u81EA\u884C\u627F\u62C5\uFF01\uFF01");
+	SetConsoleTitle(L"Console de diagnostic");
 
 	HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	DWORD dwMode = 0;
@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
 	Utils::Log(0, U8("  =                                                                                                   ="));
 	Utils::Log(0, U8("  =                                 >>>   V E X  <<<   PUBG                                           ="));
 	Utils::Log(0, U8("  ====================================================================================================="));
-	Utils::Log(1, Utf8FromWide(L"[-] [OUTPUT] 欢迎使用VEX公益DMA----功能正在启动中........").c_str());
+	Utils::Log(1, U8("[INIT] Démarrage en cours..."));
 
 
 	GameData.Config.Window.IsLogin = true;

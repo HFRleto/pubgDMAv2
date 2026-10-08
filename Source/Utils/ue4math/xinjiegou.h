@@ -697,7 +697,7 @@ inline void saveTrianglesToFile(const std::vector<triangle>& triangles, const st
 
 
 	if (!outFile) {
-		std::cerr << "无法打开文件: " << filename << std::endl;
+		std::cerr << "Cannot open file: " << filename << std::endl;
 		return;
 	}
 
@@ -717,7 +717,7 @@ inline void saveTrianglesToFile(const std::vector<triangle>& triangles, const st
 	}
 
 	outFile.close();
-	std::cout << "三角形坐标已成功保存到 " << filename << std::endl;
+	std::cout << "Triangle coordinates saved to " << filename << std::endl;
 }
 
 

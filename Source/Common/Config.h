@@ -1195,7 +1195,7 @@ public:
 			SetConfigItem(Config, { ConfigName, "MenuFontSize" }, GameData.Config.Menu.UiFontSize);
 			}();
 
-		// 启动始终使用中文菜单（忽略配置里保存的英文）
-		GameData.Config.Project.CurrentLanguage = 1;
+		// Démarre toujours avec le menu anglais (la langue enregistrée n'est pas relue)
+		GameData.Config.Project.CurrentLanguage = 0;
 	}
 };

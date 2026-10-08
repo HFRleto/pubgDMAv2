@@ -31,7 +31,7 @@ std::string FormatRemainingTime(int seconds, const std::string& language)
 	bool isEnglish = (language == "en" || language == "en-us" || language == "en_US");
 
 	if (seconds <= 0)
-		return isEnglish ? "Expired" : U8("已过期");
+		return isEnglish ? "Expired" : U8("Expired");
 
 	int days = seconds / 86400;
 	int hours = (seconds % 86400) / 3600;
@@ -42,10 +42,10 @@ std::string FormatRemainingTime(int seconds, const std::string& language)
 
 	if (isEnglish)
 	{
-		oss << days << U8("天 ")
-			<< std::setw(2) << std::setfill('0') << hours << U8("时 ")
-			<< std::setw(2) << std::setfill('0') << minutes << U8("分 ")
-			<< std::setw(2) << std::setfill('0') << secs << U8("秒");
+		oss << days << U8("d ")
+			<< std::setw(2) << std::setfill('0') << hours << U8("h ")
+			<< std::setw(2) << std::setfill('0') << minutes << U8("m ")
+			<< std::setw(2) << std::setfill('0') << secs << U8("s");
 
 	}
 	else
@@ -74,7 +74,7 @@ static int cachedRemainingTime = 0;  // 存储当前剩余时间
 static bool isInitialized = false;   // 是否已初始化
 using namespace ImGui;
 RECT menuRect;
-inline bool Languages = 1;
+inline bool Languages = 0;
 std::string formatTime(const std::string& input) {
 	std::regex timePattern(R"((\d{4})年(\d{1,2})月(\d{1,2})日(\d{1,2})时(\d{1,2})分(\d{1,2})秒)");
 	std::smatch match;
@@ -129,7 +129,7 @@ const char* items[3]{ "Item 0", "Item 1", "Item 2" };
 // Pluto 主标签（含「其他配置」）
 const char* GetMainTabTitle(int index) {
 	static const char* tabs[2][4] = {
-		{U8("主要透视"), U8("自瞄/无后座"), U8("物品透视"), U8("其他配置")},
+		{U8("Main ESP"), U8("Aimbot / No recoil"), U8("Item ESP"), U8("Other settings")},
 		{"Main ESP", "Aimbot/Recoil", "Item ESP", "Other"}
 	};
 	if (index < 0 || index >= 4) return "";
@@ -137,7 +137,7 @@ const char* GetMainTabTitle(int index) {
 }
 const char* GetItemsSubTabTitle(int index) {
 	static const char* tabs[2][3] = {
-		{U8("物品设置"), U8("物品分组"), U8("雷达设置")},
+		{U8("Item settings"), U8("Item groups"), U8("Radar settings")},
 		{"Items", "Groups", "Radar"}
 	};
 	if (index < 0 || index >= 3) return "";
@@ -152,9 +152,9 @@ const char* GetTabTitle1(int index) {
 	static const char* tabs[2][14] = {
 		{
 
-			U8("步枪"), U8("栓狙"), U8("连狙"), U8("机枪"), U8("霰弹枪"),
-			U8("手枪"), U8("冲锋枪"),U8("配件"), U8("药品"), U8("防具"),
-			U8("子弹"), U8("投掷物"), U8("钥匙"), U8("其他")
+			U8("Rifle"), U8("Bolt sniper"), U8("DMR"), U8("LMG"), U8("Shotgun"),
+			U8("Pistol"), U8("SMG"),U8("Attachments"), U8("Meds"), U8("Armor"),
+			U8("Ammo"), U8("Throwables"), U8("Keys"), U8("Other")
 
 
 		}, // 中文
@@ -190,10 +190,10 @@ void OpenLink(const char* url) {
 }
 
 const char* itemsChinese[] = {
-	U8("头皮"), U8("头部"), U8("脖子"), U8("胸部"), U8("裆部"),
-	U8("左肩"), U8("左肘"), U8("右肩"), U8("右肘"),
-	U8("左手"), U8("右手"), U8("左骨盆"), U8("左腿骨"),
-	U8("右骨盆"), U8("右腿骨"), U8("左脚"), U8("右脚")
+	U8("Scalp"), U8("Head"), U8("Neck"), U8("Chest"), U8("Groin"),
+	U8("Left shoulder"), U8("Left elbow"), U8("Right shoulder"), U8("Right elbow"),
+	U8("Left hand"), U8("Right hand"), U8("Left hip"), U8("Left leg"),
+	U8("Right hip"), U8("Right leg"), U8("Left foot"), U8("Right foot")
 };
 
 
@@ -367,27 +367,27 @@ public:
 							ImGui::SliderInt1(Languages == 1 ? U8("切换速度(毫秒)") : "Switching Speed (ms)", &randomSpeed, 100, 2000);
 							Config.RandomSpeed = randomSpeed;
 
-							/*ImGui::Text(U8("随机自瞄位置选择"));
+							/*ImGui::Text(U8("Random aim bone selection"));
 							ImGui::Separator();*/
 
 							/*const char* BodyPartNames[17] = {
-								U8("头顶"),
-								U8("头部"),
-								U8("脖子"),
-								U8("胸部"),
-								U8("裆部"),
-								U8("左肩"),
-								U8("左肘"),
-								U8("右肩"),
-								U8("右肘"),
-								U8("左手"),
-								U8("右手"),
-								U8("左骨盆"),
-								U8("左腿骨"),
-								U8("右骨盆"),
-								U8("右腿骨"),
-								U8("左脚"),
-								U8("右脚")
+								U8("Top of head"),
+								U8("Head"),
+								U8("Neck"),
+								U8("Chest"),
+								U8("Groin"),
+								U8("Left shoulder"),
+								U8("Left elbow"),
+								U8("Right shoulder"),
+								U8("Right elbow"),
+								U8("Left hand"),
+								U8("Right hand"),
+								U8("Left hip"),
+								U8("Left leg"),
+								U8("Right hip"),
+								U8("Right leg"),
+								U8("Left foot"),
+								U8("Right foot")
 							};*/
 
 							//// 显示骨骼选择列表，使用多选框
@@ -755,7 +755,7 @@ public:
 			static int filterPlayerListIndex = 0;
 
 			ImGui::SetNextItemWidth(100);
-			if (ImGui::BeginCombo(U8("##名单类型"), filterPlayerList[filterPlayerListIndex], filterPlayerListIndex)) {
+			if (ImGui::BeginCombo(U8("##ListType"), filterPlayerList[filterPlayerListIndex], filterPlayerListIndex)) {
 				for (int i = 0; i < IM_ARRAYSIZE(filterPlayerList); i++) {
 					bool isSelected = (filterPlayerListIndex == i);
 					if (ImGui::Selectable(filterPlayerList[i], isSelected))
@@ -773,7 +773,7 @@ public:
 
 			const char* filterPlayerType[] = { Languages == 1 ? U8("全部类型") : "All Types",Languages == 1 ? U8("玩家") : "Player",Languages == 1 ? U8("合作者") : "Collaborator",Languages == 1 ? U8("队友") : "Teammate",Languages == 1 ? U8("本人") : "Myself",Languages == 1 ? U8("人机") : "Bot",Languages == 1 ? U8("菜逼") : "Noob",Languages == 1 ? U8("挂逼") : "Cheater",Languages == 1 ? U8("老挂逼") : "Perma Cheat" };
 			static int filterPlayerTypeIndex = 0;
-			if (ImGui::BeginCombo(U8("##玩家类型"), filterPlayerType[filterPlayerTypeIndex], filterPlayerTypeIndex)) {
+			if (ImGui::BeginCombo(U8("##PlayerType"), filterPlayerType[filterPlayerTypeIndex], filterPlayerTypeIndex)) {
 				for (int i = 0; i < IM_ARRAYSIZE(filterPlayerType); i++) {
 					bool isSelected = (filterPlayerTypeIndex == i);
 					if (ImGui::Selectable(filterPlayerType[i], isSelected))
@@ -792,7 +792,7 @@ public:
 			const char* rankModeOptions[] = { Languages == 1 ? U8("不查战绩") : "Hide Rank",Languages == 1 ? U8("TPP单人") : "TPP Solo",Languages == 1 ? U8("TPP小队") : "TPP Squad",Languages == 1 ? U8("FPP单人") : "FPP Solo",Languages == 1 ? U8("FPP小队") : "FPP Squad" };
 			const char* currentRankMode = rankModeOptions[GameData.Config.PlayerList.RankMode];
 
-			if (ImGui::BeginCombo(U8("##战绩数据"), rankModeOptions[GameData.Config.PlayerList.RankMode], GameData.Config.PlayerList.RankMode)) {
+			if (ImGui::BeginCombo(U8("##StatsMode"), rankModeOptions[GameData.Config.PlayerList.RankMode], GameData.Config.PlayerList.RankMode)) {
 				for (int i = 0; i < IM_ARRAYSIZE(rankModeOptions); i++) {
 					bool isSelected = (GameData.Config.PlayerList.RankMode == i);
 					if (ImGui::Selectable(rankModeOptions[i], isSelected))
@@ -847,7 +847,7 @@ public:
 					ImGui::TableSetColumnIndex(column);
 					const char* header = ImGui::TableGetColumnName(column);  // 获取列名
 
-					if (column == 2 || column == 10)  // 仅对 "段位" (索引 2) 和 "名单" (索引 10) 居中对齐
+					if (column == 2 || column == 10)  // 仅对 "Rank" (索引 2) 和 "List" (索引 10) 居中对齐
 					{
 						float width = ImGui::GetColumnWidth(column);  // 获取列宽
 						float text_width = ImGui::CalcTextSize(header).x;  // 计算文本宽度
@@ -902,74 +902,74 @@ public:
 						// 获取本地化段位文本（PUBG）
 						std::string localizedTier;
 						if (Languages == 1) { // 中文
-							if (PlayerRankData.TierToString == U8("青铜1")) localizedTier = U8("青铜 1");
-							else if (PlayerRankData.TierToString == U8("青铜2")) localizedTier = U8("青铜 2");
-							else if (PlayerRankData.TierToString == U8("青铜3")) localizedTier = U8("青铜 3");
-							else if (PlayerRankData.TierToString == U8("青铜4")) localizedTier = U8("青铜 4");
-							else if (PlayerRankData.TierToString == U8("青铜5")) localizedTier = U8("青铜 5");
-							else if (PlayerRankData.TierToString == U8("白银1")) localizedTier = U8("白银 1");
-							else if (PlayerRankData.TierToString == U8("白银2")) localizedTier = U8("白银 2");
-							else if (PlayerRankData.TierToString == U8("白银3")) localizedTier = U8("白银 3");
-							else if (PlayerRankData.TierToString == U8("白银4")) localizedTier = U8("白银 4");
-							else if (PlayerRankData.TierToString == U8("白银5")) localizedTier = U8("白银 5");
-							else if (PlayerRankData.TierToString == U8("黄金1")) localizedTier = U8("黄金 1");
-							else if (PlayerRankData.TierToString == U8("黄金2")) localizedTier = U8("黄金 2");
-							else if (PlayerRankData.TierToString == U8("黄金3")) localizedTier = U8("黄金 3");
-							else if (PlayerRankData.TierToString == U8("黄金4")) localizedTier = U8("黄金 4");
-							else if (PlayerRankData.TierToString == U8("黄金5")) localizedTier = U8("黄金 5");
-							else if (PlayerRankData.TierToString == U8("白金1")) localizedTier = U8("白金 1");
-							else if (PlayerRankData.TierToString == U8("白金2")) localizedTier = U8("白金 2");
-							else if (PlayerRankData.TierToString == U8("白金3")) localizedTier = U8("白金 3");
-							else if (PlayerRankData.TierToString == U8("白金4")) localizedTier = U8("白金 4");
-							else if (PlayerRankData.TierToString == U8("白金5")) localizedTier = U8("白金 5");
-							else if (PlayerRankData.TierToString == U8("水晶1")) localizedTier = U8("水晶 1");
-							else if (PlayerRankData.TierToString == U8("水晶2")) localizedTier = U8("水晶 2");
-							else if (PlayerRankData.TierToString == U8("水晶3")) localizedTier = U8("水晶 3");
-							else if (PlayerRankData.TierToString == U8("水晶4")) localizedTier = U8("水晶 4");
-							else if (PlayerRankData.TierToString == U8("钻石1")) localizedTier = U8("钻石 1");
-							else if (PlayerRankData.TierToString == U8("钻石2")) localizedTier = U8("钻石 2");
-							else if (PlayerRankData.TierToString == U8("钻石3")) localizedTier = U8("钻石 3");
-							else if (PlayerRankData.TierToString == U8("钻石4")) localizedTier = U8("钻石 4");
-							else if (PlayerRankData.TierToString == U8("钻石5")) localizedTier = U8("钻石 5");
-							else if (PlayerRankData.TierToString == U8("大师1")) localizedTier = U8("大师");
-							else if (PlayerRankData.TierToString == U8("生存者1")) localizedTier = U8("生存者");
-							else if (PlayerRankData.TierToString == U8("未定级")) localizedTier = U8("没有KD");
-							else if (PlayerRankData.TierToString == U8("没有KD")) localizedTier = U8("没有KD");
+							if (PlayerRankData.TierToString == U8("Bronze1")) localizedTier = U8("Bronze 1");
+							else if (PlayerRankData.TierToString == U8("Bronze2")) localizedTier = U8("Bronze 2");
+							else if (PlayerRankData.TierToString == U8("Bronze3")) localizedTier = U8("Bronze 3");
+							else if (PlayerRankData.TierToString == U8("Bronze4")) localizedTier = U8("Bronze 4");
+							else if (PlayerRankData.TierToString == U8("Bronze5")) localizedTier = U8("Bronze 5");
+							else if (PlayerRankData.TierToString == U8("Silver1")) localizedTier = U8("Silver 1");
+							else if (PlayerRankData.TierToString == U8("Silver2")) localizedTier = U8("Silver 2");
+							else if (PlayerRankData.TierToString == U8("Silver3")) localizedTier = U8("Silver 3");
+							else if (PlayerRankData.TierToString == U8("Silver4")) localizedTier = U8("Silver 4");
+							else if (PlayerRankData.TierToString == U8("Silver5")) localizedTier = U8("Silver 5");
+							else if (PlayerRankData.TierToString == U8("Gold1")) localizedTier = U8("Gold 1");
+							else if (PlayerRankData.TierToString == U8("Gold2")) localizedTier = U8("Gold 2");
+							else if (PlayerRankData.TierToString == U8("Gold3")) localizedTier = U8("Gold 3");
+							else if (PlayerRankData.TierToString == U8("Gold4")) localizedTier = U8("Gold 4");
+							else if (PlayerRankData.TierToString == U8("Gold5")) localizedTier = U8("Gold 5");
+							else if (PlayerRankData.TierToString == U8("Platinum1")) localizedTier = U8("Platinum 1");
+							else if (PlayerRankData.TierToString == U8("Platinum2")) localizedTier = U8("Platinum 2");
+							else if (PlayerRankData.TierToString == U8("Platinum3")) localizedTier = U8("Platinum 3");
+							else if (PlayerRankData.TierToString == U8("Platinum4")) localizedTier = U8("Platinum 4");
+							else if (PlayerRankData.TierToString == U8("Platinum5")) localizedTier = U8("Platinum 5");
+							else if (PlayerRankData.TierToString == U8("Crystal1")) localizedTier = U8("Crystal 1");
+							else if (PlayerRankData.TierToString == U8("Crystal2")) localizedTier = U8("Crystal 2");
+							else if (PlayerRankData.TierToString == U8("Crystal3")) localizedTier = U8("Crystal 3");
+							else if (PlayerRankData.TierToString == U8("Crystal4")) localizedTier = U8("Crystal 4");
+							else if (PlayerRankData.TierToString == U8("Diamond1")) localizedTier = U8("Diamond 1");
+							else if (PlayerRankData.TierToString == U8("Diamond2")) localizedTier = U8("Diamond 2");
+							else if (PlayerRankData.TierToString == U8("Diamond3")) localizedTier = U8("Diamond 3");
+							else if (PlayerRankData.TierToString == U8("Diamond4")) localizedTier = U8("Diamond 4");
+							else if (PlayerRankData.TierToString == U8("Diamond5")) localizedTier = U8("Diamond 5");
+							else if (PlayerRankData.TierToString == U8("Master1")) localizedTier = U8("Master");
+							else if (PlayerRankData.TierToString == U8("Survivor1")) localizedTier = U8("Survivor");
+							else if (PlayerRankData.TierToString == U8("Unranked")) localizedTier = U8("No KD");
+							else if (PlayerRankData.TierToString == U8("No KD")) localizedTier = U8("No KD");
 						}
 						else { // 英文
-							if (PlayerRankData.TierToString == U8("青铜1")) localizedTier = U8("Bronze 1");
-							else if (PlayerRankData.TierToString == U8("青铜2")) localizedTier = U8("Bronze 2");
-							else if (PlayerRankData.TierToString == U8("青铜3")) localizedTier = U8("Bronze 3");
-							else if (PlayerRankData.TierToString == U8("青铜4")) localizedTier = U8("Bronze 4");
-							else if (PlayerRankData.TierToString == U8("青铜5")) localizedTier = U8("Bronze 5");
-							else if (PlayerRankData.TierToString == U8("白银1")) localizedTier = U8("Silver 1");
-							else if (PlayerRankData.TierToString == U8("白银2")) localizedTier = U8("Silver 2");
-							else if (PlayerRankData.TierToString == U8("白银3")) localizedTier = U8("Silver 3");
-							else if (PlayerRankData.TierToString == U8("白银4")) localizedTier = U8("Silver 4");
-							else if (PlayerRankData.TierToString == U8("白银5")) localizedTier = U8("Silver 5");
-							else if (PlayerRankData.TierToString == U8("黄金1")) localizedTier = U8("Gold 1");
-							else if (PlayerRankData.TierToString == U8("黄金2")) localizedTier = U8("Gold 2");
-							else if (PlayerRankData.TierToString == U8("黄金3")) localizedTier = U8("Gold 3");
-							else if (PlayerRankData.TierToString == U8("黄金4")) localizedTier = U8("Gold 4");
-							else if (PlayerRankData.TierToString == U8("黄金5")) localizedTier = U8("Gold 5");
-							else if (PlayerRankData.TierToString == U8("白金1")) localizedTier = U8("Platinum 1");
-							else if (PlayerRankData.TierToString == U8("白金2")) localizedTier = U8("Platinum 2");
-							else if (PlayerRankData.TierToString == U8("白金3")) localizedTier = U8("Platinum 3");
-							else if (PlayerRankData.TierToString == U8("白金4")) localizedTier = U8("Platinum 4");
-							else if (PlayerRankData.TierToString == U8("白金5")) localizedTier = U8("Platinum 5");
-							else if (PlayerRankData.TierToString == U8("水晶1")) localizedTier = U8("Crystal 1");
-							else if (PlayerRankData.TierToString == U8("水晶2")) localizedTier = U8("Crystal 2");
-							else if (PlayerRankData.TierToString == U8("水晶3")) localizedTier = U8("Crystal 3");
-							else if (PlayerRankData.TierToString == U8("水晶4")) localizedTier = U8("Crystal 4");
-							else if (PlayerRankData.TierToString == U8("钻石1")) localizedTier = U8("Diamond 1");
-							else if (PlayerRankData.TierToString == U8("钻石2")) localizedTier = U8("Diamond 2");
-							else if (PlayerRankData.TierToString == U8("钻石3")) localizedTier = U8("Diamond 3");
-							else if (PlayerRankData.TierToString == U8("钻石4")) localizedTier = U8("Diamond 4");
-							else if (PlayerRankData.TierToString == U8("钻石5")) localizedTier = U8("Diamond 5");
-							else if (PlayerRankData.TierToString == U8("大师1")) localizedTier = U8("Master");
-							else if (PlayerRankData.TierToString == U8("生存者1")) localizedTier = U8("Survivor");
-							else if (PlayerRankData.TierToString == U8("未定级")) localizedTier = U8("Unranked");
-							else if (PlayerRankData.TierToString == U8("没有KD")) localizedTier = U8("Unranked");
+							if (PlayerRankData.TierToString == U8("Bronze1")) localizedTier = U8("Bronze 1");
+							else if (PlayerRankData.TierToString == U8("Bronze2")) localizedTier = U8("Bronze 2");
+							else if (PlayerRankData.TierToString == U8("Bronze3")) localizedTier = U8("Bronze 3");
+							else if (PlayerRankData.TierToString == U8("Bronze4")) localizedTier = U8("Bronze 4");
+							else if (PlayerRankData.TierToString == U8("Bronze5")) localizedTier = U8("Bronze 5");
+							else if (PlayerRankData.TierToString == U8("Silver1")) localizedTier = U8("Silver 1");
+							else if (PlayerRankData.TierToString == U8("Silver2")) localizedTier = U8("Silver 2");
+							else if (PlayerRankData.TierToString == U8("Silver3")) localizedTier = U8("Silver 3");
+							else if (PlayerRankData.TierToString == U8("Silver4")) localizedTier = U8("Silver 4");
+							else if (PlayerRankData.TierToString == U8("Silver5")) localizedTier = U8("Silver 5");
+							else if (PlayerRankData.TierToString == U8("Gold1")) localizedTier = U8("Gold 1");
+							else if (PlayerRankData.TierToString == U8("Gold2")) localizedTier = U8("Gold 2");
+							else if (PlayerRankData.TierToString == U8("Gold3")) localizedTier = U8("Gold 3");
+							else if (PlayerRankData.TierToString == U8("Gold4")) localizedTier = U8("Gold 4");
+							else if (PlayerRankData.TierToString == U8("Gold5")) localizedTier = U8("Gold 5");
+							else if (PlayerRankData.TierToString == U8("Platinum1")) localizedTier = U8("Platinum 1");
+							else if (PlayerRankData.TierToString == U8("Platinum2")) localizedTier = U8("Platinum 2");
+							else if (PlayerRankData.TierToString == U8("Platinum3")) localizedTier = U8("Platinum 3");
+							else if (PlayerRankData.TierToString == U8("Platinum4")) localizedTier = U8("Platinum 4");
+							else if (PlayerRankData.TierToString == U8("Platinum5")) localizedTier = U8("Platinum 5");
+							else if (PlayerRankData.TierToString == U8("Crystal1")) localizedTier = U8("Crystal 1");
+							else if (PlayerRankData.TierToString == U8("Crystal2")) localizedTier = U8("Crystal 2");
+							else if (PlayerRankData.TierToString == U8("Crystal3")) localizedTier = U8("Crystal 3");
+							else if (PlayerRankData.TierToString == U8("Crystal4")) localizedTier = U8("Crystal 4");
+							else if (PlayerRankData.TierToString == U8("Diamond1")) localizedTier = U8("Diamond 1");
+							else if (PlayerRankData.TierToString == U8("Diamond2")) localizedTier = U8("Diamond 2");
+							else if (PlayerRankData.TierToString == U8("Diamond3")) localizedTier = U8("Diamond 3");
+							else if (PlayerRankData.TierToString == U8("Diamond4")) localizedTier = U8("Diamond 4");
+							else if (PlayerRankData.TierToString == U8("Diamond5")) localizedTier = U8("Diamond 5");
+							else if (PlayerRankData.TierToString == U8("Master1")) localizedTier = U8("Master");
+							else if (PlayerRankData.TierToString == U8("Survivor1")) localizedTier = U8("Survivor");
+							else if (PlayerRankData.TierToString == U8("Unranked")) localizedTier = U8("Unranked");
+							else if (PlayerRankData.TierToString == U8("No KD")) localizedTier = U8("Unranked");
 
 						}
 
@@ -1021,7 +1021,7 @@ public:
 
 						if (player.PartnerLevel > 0) {
 							PlayerType = Languages == 1 ?
-								U8("合作者Lv.") + std::to_string(player.PartnerLevel) :
+								U8("Partner Lv.") + std::to_string(player.PartnerLevel) :
 								"Partner Lv." + std::to_string(player.PartnerLevel);
 						}
 						else if (player.IsSelf) {
@@ -1060,11 +1060,11 @@ public:
 							(Languages != 1 && PlayerType == "Player");
 
 						if (isDefaultPlayer) {
-							if (PlayerRankData.TierToString == U8("大师1") && KDAValue > 2.9) {
+							if (PlayerRankData.TierToString == U8("Master1") && KDAValue > 2.9) {
 								PlayerType = Languages == 1 ? U8("老挂逼") : "Perma Cheat";
 								textColor = ImVec4(1.0f, 0.0f, 1.0f, 1.0f);
 							}
-							else if (PlayerRankData.TierToString == U8("大师1") || PlayerRankData.TierToString == U8("钻石1") || PlayerRankData.TierToString == U8("钻石2") || PlayerRankData.TierToString == U8("钻石3")) {
+							else if (PlayerRankData.TierToString == U8("Master1") || PlayerRankData.TierToString == U8("Diamond1") || PlayerRankData.TierToString == U8("Diamond2") || PlayerRankData.TierToString == U8("Diamond3")) {
 								PlayerType = Languages == 1 ? U8("挂逼") : "Cheater";
 								textColor = ImVec4(1.0f, 0.0f, 0.0f, 1.0f);
 							}
@@ -1362,7 +1362,7 @@ public:
 					ImGui::BeginChild(false, "##sidebar", "o", ImVec2(0.f, 0.f), true, MenuTheme::ScrollPanelFlags());
 					// 语言切换
 					ImGui::TextColoredWishFont(font::calibri_bold_hint, ImVec4(0.00f, 0.82f, 0.94f, 1.00f), Languages == 1 ? U8("语言切换") : "Language");
-					const char* langItems[] = { "English (EN)", U8("中文 (CN)") };
+					const char* langItems[] = { "English (EN)", U8("Chinese (CN)") };
 					int langIdx = Languages ? 1 : 0;
 					ImGui::SetNextItemWidth(-1);
 					if (ImGui::Combo_popup("##langSide", &langIdx, langItems, IM_ARRAYSIZE(langItems))) {
@@ -2829,7 +2829,7 @@ public:
 								ImGui::InputTextEx(Languages == 1 ? U8("观看地址") : "Watch URL", Languages == 1 ? U8("URL") : "URL", address, IM_ARRAYSIZE(address), ImVec2(280, 30), NULL);
 
 								// 添加链接按钮
-								if (ImGui::Button(GameData.Config.WebRadar.isWebRadarConnect ? U8("断开连接") : U8("连接"), ImVec2(200, 30))) {
+								if (ImGui::Button(GameData.Config.WebRadar.isWebRadarConnect ? U8("Disconnect") : U8("Connect"), ImVec2(200, 30))) {
 									if (GameData.Config.WebRadar.isWebRadarConnect) {
 										// 断开连接
 										GameData.Config.WebRadar.isWebRadarEnable = false;

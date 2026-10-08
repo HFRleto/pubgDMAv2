@@ -48,3 +48,7 @@
 .vs/
 *.VC.db
 *.suo
+
+# ---------- Outils : sorties locales ----------
+__pycache__/
+/tools/dumper_out/

@@ -37,7 +37,7 @@ public:
                     mem.AddScatterRead(hScatter, Vehicle.Entity + GameData.Offset["RootComponent"], (uint64_t*)&Vehicle.RootComponent);
                     mem.AddScatterRead(hScatter, Vehicle.Entity + GameData.Offset["VehicleMovement"], (uint64_t*)&Vehicle.VehicleMovement);
 
-                    if (Vehicle.Name == "摩托艇" || Vehicle.Name == "快艇" || Vehicle.Name == "皮划艇")
+                    if (Vehicle.Name == "Aquarail" || Vehicle.Name == "Speedboat" || Vehicle.Name == "Kayak")
                     {
                         mem.AddScatterRead(hScatter, Vehicle.Entity + GameData.Offset["FloatingComponent"], (uint64_t*)&Vehicle.VehicleCommonComponent);
                     }

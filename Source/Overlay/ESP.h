@@ -375,7 +375,7 @@ public:
 
             // 简化的文本
             RenderHelper::Text(
-                Utils::StringToUTF8("搜索目标中...").c_str(),
+                Utils::StringToUTF8("Searching for target...").c_str(),
                 { screenCenter.X - 60, screenCenter.Y - 40 },
                 color, 20, false, false
             );
@@ -505,24 +505,24 @@ public:
             std::string statusText;
 
             if (isAdjustingHorizontal && isAdjusting) {
-                statusText = "全自动校准中"; // 同时水平和垂直校准
+                statusText = "Auto calibrating"; // 同时水平和垂直校准
             }
             else if (isAdjustingHorizontal) {
-                statusText = "水平校准中";
+                statusText = "Calibrating horizontal";
             }
             else if (isAdjusting) {
-                statusText = "垂直校准中";
+                statusText = "Calibrating vertical";
             }
             else if (isLocked) {
-                statusText = "已锁定";
+                statusText = "Locked";
             }
             else {
-                statusText = "校准中";
+                statusText = "Calibrating";
             }
 
-            std::string distText = "距离: " + std::to_string((int)cachedMortarDistance) + "M";
-            std::string pitchText = "角度: " + std::to_string((int)cachedRecommendedPitch) + "°";
-            std::string hintText = "按住右键进行全自动校准(水平+垂直)"; // 更新提示
+            std::string distText = "Distance: " + std::to_string((int)cachedMortarDistance) + "M";
+            std::string pitchText = "Angle: " + std::to_string((int)cachedRecommendedPitch) + "°";
+            std::string hintText = "Hold right mouse button for full auto calibration (horizontal + vertical)"; // 更新提示
 
             ImU32 textColor = isLocked ? IM_COL32(0, 255, 100, 255) : IM_COL32(255, 165, 0, 255);
             ImU32 hintColor = IM_COL32(180, 180, 255, 200);
@@ -562,7 +562,7 @@ public:
 
         if (GameData.Config.ESP.FocusMode)
         {
-            Items = "战斗模式";
+            Items = "Battle Mode";
         }
         else {
             if (!GameData.Config.Item.ShowGroups.empty()) {
@@ -611,7 +611,7 @@ public:
                 Scene,
                 (int)io.Framerate,
                 Localize("自瞄开关", "Aimbot enable"),
-                GameData.Config.AimBot.Enable ? "开" : "关",
+                GameData.Config.AimBot.Enable ? "On" : "Off",
                 Localize("战斗模式", "Battle Mode"),
                 GameData.Config.ESP.FocusMode ? Localize("开启", "On") : Localize("关闭", "Off"),
                 Localize("自瞄配置", "AimBot Profile"),
@@ -644,7 +644,7 @@ public:
             ImU32 textColor = (GameData.LocalPlayerInfo.SpectatedCount > 0) ? true : false;
             if (textColor) {
                 RenderHelper::StrokeText(Utils::StringToUTF8(std::format(
-                    "有菜逼偷学技术   当前菜逼数量 {}  ",
+                    "You are being spectated   spectators: {}  ",
                     GameData.LocalPlayerInfo.SpectatedCount
                     //)).c_str(), ImVec2(posX, posY), IM_COL32(255, 0, 0, 255), 18, true, true);
                 )).c_str(), ImVec2(posX, posY), IM_COL32(255, 0, 0, 255), 24, true, true);
@@ -1438,7 +1438,7 @@ public:
                     float remaining = Project.TimeTillExplosion;
                     if (remaining > 0.0f && remaining <= totalTime)
                     {
-                        std::string countdownText = std::format("{:.1f}秒", remaining);
+                        std::string countdownText = std::format("{:.1f}s", remaining);
                         RenderHelper::StrokeText(countdownText.c_str(), { Project.ScreenLocation.X, Project.ScreenLocation.Y + (InfoSize.y + 3 * Scale) }, TimerColor, FontSize, true, false);
                         bestC4Remaining = (bestC4Remaining < 0.0f) ? remaining : (bestC4Remaining < remaining ? bestC4Remaining : remaining);
                     }
@@ -1463,7 +1463,7 @@ public:
         {
             ImColor centerColor = Utils::FloatToImColor(GameData.Config.Project.ChareColor);
             int fontSize = GameData.Config.Project.ChareFontSize > 0 ? (GameData.Config.Project.ChareFontSize * 3) : 72;
-            std::string centerText = std::format("{:.1f}秒", bestC4Remaining);
+            std::string centerText = std::format("{:.1f}s", bestC4Remaining);
             RenderHelper::StrokeText(centerText.c_str(),
                 { GameData.Config.Overlay.ScreenWidth / 2.0f, GameData.Config.Overlay.ScreenHeight / 2.0f },
                 centerColor,
@@ -1483,9 +1483,9 @@ public:
             if (GameData.LocalPlayerInfo.ElapsedCookingTime > 0 && (int)GameData.LocalPlayerInfo.WeaponClassByte == 10)
             {
                 float totalTime = 5.05f;
-                if (GameData.LocalPlayerInfo.WeaponName == "手雷")
+                if (GameData.LocalPlayerInfo.WeaponName == "Grenade")
                     totalTime = 5.0f;
-                else if (GameData.LocalPlayerInfo.WeaponName == "闪光弹")
+                else if (GameData.LocalPlayerInfo.WeaponName == "Flashbang")
                     totalTime = 2.5f;
                 float progressValue = GameData.LocalPlayerInfo.ElapsedCookingTime / totalTime;
 
@@ -1505,7 +1505,7 @@ public:
                 if (remaining > 0.0f)
                 {
                     int fontSize = GameData.Config.Project.ChareFontSize > 0 ? (GameData.Config.Project.ChareFontSize * 2) : 56;
-                    std::string centerText = std::format("{:.1f}秒", remaining);
+                    std::string centerText = std::format("{:.1f}s", remaining);
                     RenderHelper::StrokeText(centerText.c_str(),
                         { GameData.Config.Overlay.ScreenWidth / 2.0f, GameData.Config.Overlay.ScreenHeight / 2.0f },
                         Color,
@@ -2013,7 +2013,7 @@ public:
                 }
             }
 
-            if (Player.WeaponName == "手雷" && (int)Player.WeaponClassByte == 10 && Player.ElapsedCookingTime > 0.0f)
+            if (Player.WeaponName == "Grenade" && (int)Player.WeaponClassByte == 10 && Player.ElapsedCookingTime > 0.0f)
             {
                 float remaining = 5.0f - Player.ElapsedCookingTime;
                 if (remaining > 0.0f && remaining <= 5.0f)
@@ -2021,7 +2021,7 @@ public:
                     FVector2D handPos = Player.Skeleton.ScreenBones[EBoneIndex::Hand_R];
                     ImColor timerColor = Utils::FloatToImColor(GameData.Config.Project.ChareColor);
                     int timerFontSize = GameData.Config.Project.ChareFontSize > 0 ? GameData.Config.Project.ChareFontSize : GameData.Config.ESP.FontSize;
-                    std::string countdownText = std::format("{:.1f}秒", remaining);
+                    std::string countdownText = std::format("{:.1f}s", remaining);
                     RenderHelper::StrokeText(countdownText.c_str(), { handPos.X, handPos.Y }, timerColor, timerFontSize, true, false);
                 }
             }
@@ -2245,21 +2245,21 @@ public:
             if (maxKDA > 0) {
                 hasSkillData = true;
                 if (maxKDA < 1.5f) {
-                    skillText = "绿玩";
+                    skillText = "Legit";
                     skillColor = IM_COL32(0, 255, 0, 255);  // 绿色
                 } else if (maxKDA >= 1.5f && maxKDA < 2.3f) {
-                    skillText = "高手";
+                    skillText = "Skilled";
                     skillColor = IM_COL32(255, 165, 0, 255);  // 橙色
                 } else if (maxKDA >= 2.3f && maxKDA < 3.5f) {
-                    skillText = "挂逼";
+                    skillText = "Cheater";
                     skillColor = IM_COL32(255, 182, 193, 255);  // 浅粉红色
                 } else if (maxKDA >= 3.5f) {
-                    skillText = "老挂逼";
+                    skillText = "Veteran cheater";
                     skillColor = IM_COL32(255, 0, 0, 255);  // 红色
                 }
             } else {
                 hasSkillData = true;
-                skillText = "未知";
+                skillText = "Unknown";
                 skillColor = IM_COL32(65, 105, 225, 255);  // 皇家蓝色
             }
 
@@ -2343,9 +2343,9 @@ public:
                         ImColor ammoColor;
 
                         // Define special weapon sets
-                        bool isThrowable = (Player.WeaponName == "手雷" || Player.WeaponName == "烟雾弹" || Player.WeaponName == "闪光弹" || Player.WeaponName == "燃烧瓶" ||
-                            Player.WeaponName == "C4" || Player.WeaponName == "诱饵手雷" || Player.WeaponName == "蓝圈手雷" || Player.WeaponName == "粘性炸弹");
-                        bool isSpecial = (Player.WeaponName == "迫击炮" || Player.WeaponName == "火箭筒");
+                        bool isThrowable = (Player.WeaponName == "Grenade" || Player.WeaponName == "Smoke Grenade" || Player.WeaponName == "Flashbang" || Player.WeaponName == "Molotov" ||
+                            Player.WeaponName == "C4" || Player.WeaponName == "Decoy Grenade" || Player.WeaponName == "Bluezone Grenade" || Player.WeaponName == "Sticky Bomb");
+                        bool isSpecial = (Player.WeaponName == "Mortar" || Player.WeaponName == "Panzerfaust");
 
                         bool reloading = Player.IsReloading || (isThrowable && Player.ElapsedCookingTime > 0.01f);
                         if (reloading) {
@@ -2448,7 +2448,7 @@ public:
             // 显示合作者信息
             if (GameData.Config.ESP.Partner && Player.PartnerLevel > 0 && bShowInfo) {
                 std::string partnerText = Localize(
-                    std::format("合作者Lv:{}", (int)Player.PartnerLevel),
+                    std::format("Partner Lv:{}", (int)Player.PartnerLevel),
                     std::format("Partner Lv:{}", (int)Player.PartnerLevel)
                 );
 
@@ -2463,7 +2463,7 @@ public:
                 // 添加等级信息
                 if (GameData.Config.ESP.等级 && bShowInfo) {
                     textBuilder.add(Localize(
-                        std::format("等级:{} ", (int)Player.SurvivalLevel),
+                        std::format("Level:{} ", (int)Player.SurvivalLevel),
                         std::format("Lv:{} ", (int)Player.SurvivalLevel)
                     ));
                 }
@@ -2471,7 +2471,7 @@ public:
                 // 添加伤害信息
                 if (GameData.Config.ESP.伤害 && Player.DamageDealtOnEnemy > 0 && bShowInfo) {
                     textBuilder.add(Localize(
-                        std::format("伤害:{}", (int)Player.DamageDealtOnEnemy),
+                        std::format("Damage:{}", (int)Player.DamageDealtOnEnemy),
                         std::format("D:{}", (int)Player.DamageDealtOnEnemy)
                     ));
                 }
@@ -2490,7 +2490,7 @@ public:
                 // 添加击杀信息
                 if (GameData.Config.ESP.击杀 && Player.KillCount > 0 && bShowInfo) {
                     textBuilder.add(Localize(
-                        std::format("击杀:{} ", (int)Player.KillCount),
+                        std::format("Kills:{} ", (int)Player.KillCount),
                         std::format("K:{} ", (int)Player.KillCount)
                     ));
                 }
@@ -2498,7 +2498,7 @@ public:
                 // 添加观战信息
                 if (GameData.Config.ESP.观战 && Player.SpectatedCount > 0 && bShowInfo) {
                     textBuilder.add(Localize(
-                        std::format("观战:{}", (int)Player.SpectatedCount),
+                        std::format("Spectators:{}", (int)Player.SpectatedCount),
                         std::format("G:{}", (int)Player.SpectatedCount)
                     ));
                 }
@@ -2577,74 +2577,74 @@ public:
                     // 获取本地化段位文本（PUBG）
                     std::string localizedTier;
                     if (Languages == 1) { // 中文
-                        if (PlayerRankData.TierToString == U8("青铜1")) localizedTier = U8("青铜 1");
-                        else if (PlayerRankData.TierToString == U8("青铜2")) localizedTier = U8("青铜 2");
-                        else if (PlayerRankData.TierToString == U8("青铜3")) localizedTier = U8("青铜 3");
-                        else if (PlayerRankData.TierToString == U8("青铜4")) localizedTier = U8("青铜 4");
-                        else if (PlayerRankData.TierToString == U8("青铜5")) localizedTier = U8("青铜 5");
-                        else if (PlayerRankData.TierToString == U8("白银1")) localizedTier = U8("白银 1");
-                        else if (PlayerRankData.TierToString == U8("白银2")) localizedTier = U8("白银 2");
-                        else if (PlayerRankData.TierToString == U8("白银3")) localizedTier = U8("白银 3");
-                        else if (PlayerRankData.TierToString == U8("白银4")) localizedTier = U8("白银 4");
-                        else if (PlayerRankData.TierToString == U8("白银5")) localizedTier = U8("白银 5");
-                        else if (PlayerRankData.TierToString == U8("黄金1")) localizedTier = U8("黄金 1");
-                        else if (PlayerRankData.TierToString == U8("黄金2")) localizedTier = U8("黄金 2");
-                        else if (PlayerRankData.TierToString == U8("黄金3")) localizedTier = U8("黄金 3");
-                        else if (PlayerRankData.TierToString == U8("黄金4")) localizedTier = U8("黄金 4");
-                        else if (PlayerRankData.TierToString == U8("黄金5")) localizedTier = U8("黄金 5");
-                        else if (PlayerRankData.TierToString == U8("白金1")) localizedTier = U8("白金 1");
-                        else if (PlayerRankData.TierToString == U8("白金2")) localizedTier = U8("白金 2");
-                        else if (PlayerRankData.TierToString == U8("白金3")) localizedTier = U8("白金 3");
-                        else if (PlayerRankData.TierToString == U8("白金4")) localizedTier = U8("白金 4");
-                        else if (PlayerRankData.TierToString == U8("白金5")) localizedTier = U8("白金 5");
-                        else if (PlayerRankData.TierToString == U8("水晶1")) localizedTier = U8("水晶 1");
-                        else if (PlayerRankData.TierToString == U8("水晶2")) localizedTier = U8("水晶 2");
-                        else if (PlayerRankData.TierToString == U8("水晶3")) localizedTier = U8("水晶 3");
-                        else if (PlayerRankData.TierToString == U8("水晶4")) localizedTier = U8("水晶 4");
-                        else if (PlayerRankData.TierToString == U8("钻石1")) localizedTier = U8("钻石 1");
-                        else if (PlayerRankData.TierToString == U8("钻石2")) localizedTier = U8("钻石 2");
-                        else if (PlayerRankData.TierToString == U8("钻石3")) localizedTier = U8("钻石 3");
-                        else if (PlayerRankData.TierToString == U8("钻石4")) localizedTier = U8("钻石 4");
-                        else if (PlayerRankData.TierToString == U8("钻石5")) localizedTier = U8("钻石 5");
-                        else if (PlayerRankData.TierToString == U8("大师1")) localizedTier = U8("大师");
-                        else if (PlayerRankData.TierToString == U8("生存者1")) localizedTier = U8("生存者");
-                        else if (PlayerRankData.TierToString == U8("未定级")) localizedTier = U8("没有KD");
-                        else if (PlayerRankData.TierToString == U8("没有KD")) localizedTier = U8("实力不详");
+                        if (PlayerRankData.TierToString == U8("Bronze1")) localizedTier = U8("Bronze 1");
+                        else if (PlayerRankData.TierToString == U8("Bronze2")) localizedTier = U8("Bronze 2");
+                        else if (PlayerRankData.TierToString == U8("Bronze3")) localizedTier = U8("Bronze 3");
+                        else if (PlayerRankData.TierToString == U8("Bronze4")) localizedTier = U8("Bronze 4");
+                        else if (PlayerRankData.TierToString == U8("Bronze5")) localizedTier = U8("Bronze 5");
+                        else if (PlayerRankData.TierToString == U8("Silver1")) localizedTier = U8("Silver 1");
+                        else if (PlayerRankData.TierToString == U8("Silver2")) localizedTier = U8("Silver 2");
+                        else if (PlayerRankData.TierToString == U8("Silver3")) localizedTier = U8("Silver 3");
+                        else if (PlayerRankData.TierToString == U8("Silver4")) localizedTier = U8("Silver 4");
+                        else if (PlayerRankData.TierToString == U8("Silver5")) localizedTier = U8("Silver 5");
+                        else if (PlayerRankData.TierToString == U8("Gold1")) localizedTier = U8("Gold 1");
+                        else if (PlayerRankData.TierToString == U8("Gold2")) localizedTier = U8("Gold 2");
+                        else if (PlayerRankData.TierToString == U8("Gold3")) localizedTier = U8("Gold 3");
+                        else if (PlayerRankData.TierToString == U8("Gold4")) localizedTier = U8("Gold 4");
+                        else if (PlayerRankData.TierToString == U8("Gold5")) localizedTier = U8("Gold 5");
+                        else if (PlayerRankData.TierToString == U8("Platinum1")) localizedTier = U8("Platinum 1");
+                        else if (PlayerRankData.TierToString == U8("Platinum2")) localizedTier = U8("Platinum 2");
+                        else if (PlayerRankData.TierToString == U8("Platinum3")) localizedTier = U8("Platinum 3");
+                        else if (PlayerRankData.TierToString == U8("Platinum4")) localizedTier = U8("Platinum 4");
+                        else if (PlayerRankData.TierToString == U8("Platinum5")) localizedTier = U8("Platinum 5");
+                        else if (PlayerRankData.TierToString == U8("Crystal1")) localizedTier = U8("Crystal 1");
+                        else if (PlayerRankData.TierToString == U8("Crystal2")) localizedTier = U8("Crystal 2");
+                        else if (PlayerRankData.TierToString == U8("Crystal3")) localizedTier = U8("Crystal 3");
+                        else if (PlayerRankData.TierToString == U8("Crystal4")) localizedTier = U8("Crystal 4");
+                        else if (PlayerRankData.TierToString == U8("Diamond1")) localizedTier = U8("Diamond 1");
+                        else if (PlayerRankData.TierToString == U8("Diamond2")) localizedTier = U8("Diamond 2");
+                        else if (PlayerRankData.TierToString == U8("Diamond3")) localizedTier = U8("Diamond 3");
+                        else if (PlayerRankData.TierToString == U8("Diamond4")) localizedTier = U8("Diamond 4");
+                        else if (PlayerRankData.TierToString == U8("Diamond5")) localizedTier = U8("Diamond 5");
+                        else if (PlayerRankData.TierToString == U8("Master1")) localizedTier = U8("Master");
+                        else if (PlayerRankData.TierToString == U8("Survivor1")) localizedTier = U8("Survivor");
+                        else if (PlayerRankData.TierToString == U8("Unranked")) localizedTier = U8("No KD");
+                        else if (PlayerRankData.TierToString == U8("No KD")) localizedTier = U8("Unknown skill");
                     }
                     else { // 英文
-                        if (PlayerRankData.TierToString == U8("青铜1")) localizedTier = U8("Bronze 1");
-                        else if (PlayerRankData.TierToString == U8("青铜2")) localizedTier = U8("Bronze 2");
-                        else if (PlayerRankData.TierToString == U8("青铜3")) localizedTier = U8("Bronze 3");
-                        else if (PlayerRankData.TierToString == U8("青铜4")) localizedTier = U8("Bronze 4");
-                        else if (PlayerRankData.TierToString == U8("青铜5")) localizedTier = U8("Bronze 5");
-                        else if (PlayerRankData.TierToString == U8("白银1")) localizedTier = U8("Silver 1");
-                        else if (PlayerRankData.TierToString == U8("白银2")) localizedTier = U8("Silver 2");
-                        else if (PlayerRankData.TierToString == U8("白银3")) localizedTier = U8("Silver 3");
-                        else if (PlayerRankData.TierToString == U8("白银4")) localizedTier = U8("Silver 4");
-                        else if (PlayerRankData.TierToString == U8("白银5")) localizedTier = U8("Silver 5");
-                        else if (PlayerRankData.TierToString == U8("黄金1")) localizedTier = U8("Gold 1");
-                        else if (PlayerRankData.TierToString == U8("黄金2")) localizedTier = U8("Gold 2");
-                        else if (PlayerRankData.TierToString == U8("黄金3")) localizedTier = U8("Gold 3");
-                        else if (PlayerRankData.TierToString == U8("黄金4")) localizedTier = U8("Gold 4");
-                        else if (PlayerRankData.TierToString == U8("黄金5")) localizedTier = U8("Gold 5");
-                        else if (PlayerRankData.TierToString == U8("白金1")) localizedTier = U8("Platinum 1");
-                        else if (PlayerRankData.TierToString == U8("白金2")) localizedTier = U8("Platinum 2");
-                        else if (PlayerRankData.TierToString == U8("白金3")) localizedTier = U8("Platinum 3");
-                        else if (PlayerRankData.TierToString == U8("白金4")) localizedTier = U8("Platinum 4");
-                        else if (PlayerRankData.TierToString == U8("白金5")) localizedTier = U8("Platinum 5");
-                        else if (PlayerRankData.TierToString == U8("水晶1")) localizedTier = U8("Crystal 1");
-                        else if (PlayerRankData.TierToString == U8("水晶2")) localizedTier = U8("Crystal 2");
-                        else if (PlayerRankData.TierToString == U8("水晶3")) localizedTier = U8("Crystal 3");
-                        else if (PlayerRankData.TierToString == U8("水晶4")) localizedTier = U8("Crystal 4");
-                        else if (PlayerRankData.TierToString == U8("钻石1")) localizedTier = U8("Diamond 1");
-                        else if (PlayerRankData.TierToString == U8("钻石2")) localizedTier = U8("Diamond 2");
-                        else if (PlayerRankData.TierToString == U8("钻石3")) localizedTier = U8("Diamond 3");
-                        else if (PlayerRankData.TierToString == U8("钻石4")) localizedTier = U8("Diamond 4");
-                        else if (PlayerRankData.TierToString == U8("钻石5")) localizedTier = U8("Diamond 5");
-                        else if (PlayerRankData.TierToString == U8("大师1")) localizedTier = U8("Master");
-                        else if (PlayerRankData.TierToString == U8("生存者1")) localizedTier = U8("Survivor");
-                        else if (PlayerRankData.TierToString == U8("未定级")) localizedTier = U8("Unranked");
-                        else if (PlayerRankData.TierToString == U8("没有KD")) localizedTier = U8("Unranked");
+                        if (PlayerRankData.TierToString == U8("Bronze1")) localizedTier = U8("Bronze 1");
+                        else if (PlayerRankData.TierToString == U8("Bronze2")) localizedTier = U8("Bronze 2");
+                        else if (PlayerRankData.TierToString == U8("Bronze3")) localizedTier = U8("Bronze 3");
+                        else if (PlayerRankData.TierToString == U8("Bronze4")) localizedTier = U8("Bronze 4");
+                        else if (PlayerRankData.TierToString == U8("Bronze5")) localizedTier = U8("Bronze 5");
+                        else if (PlayerRankData.TierToString == U8("Silver1")) localizedTier = U8("Silver 1");
+                        else if (PlayerRankData.TierToString == U8("Silver2")) localizedTier = U8("Silver 2");
+                        else if (PlayerRankData.TierToString == U8("Silver3")) localizedTier = U8("Silver 3");
+                        else if (PlayerRankData.TierToString == U8("Silver4")) localizedTier = U8("Silver 4");
+                        else if (PlayerRankData.TierToString == U8("Silver5")) localizedTier = U8("Silver 5");
+                        else if (PlayerRankData.TierToString == U8("Gold1")) localizedTier = U8("Gold 1");
+                        else if (PlayerRankData.TierToString == U8("Gold2")) localizedTier = U8("Gold 2");
+                        else if (PlayerRankData.TierToString == U8("Gold3")) localizedTier = U8("Gold 3");
+                        else if (PlayerRankData.TierToString == U8("Gold4")) localizedTier = U8("Gold 4");
+                        else if (PlayerRankData.TierToString == U8("Gold5")) localizedTier = U8("Gold 5");
+                        else if (PlayerRankData.TierToString == U8("Platinum1")) localizedTier = U8("Platinum 1");
+                        else if (PlayerRankData.TierToString == U8("Platinum2")) localizedTier = U8("Platinum 2");
+                        else if (PlayerRankData.TierToString == U8("Platinum3")) localizedTier = U8("Platinum 3");
+                        else if (PlayerRankData.TierToString == U8("Platinum4")) localizedTier = U8("Platinum 4");
+                        else if (PlayerRankData.TierToString == U8("Platinum5")) localizedTier = U8("Platinum 5");
+                        else if (PlayerRankData.TierToString == U8("Crystal1")) localizedTier = U8("Crystal 1");
+                        else if (PlayerRankData.TierToString == U8("Crystal2")) localizedTier = U8("Crystal 2");
+                        else if (PlayerRankData.TierToString == U8("Crystal3")) localizedTier = U8("Crystal 3");
+                        else if (PlayerRankData.TierToString == U8("Crystal4")) localizedTier = U8("Crystal 4");
+                        else if (PlayerRankData.TierToString == U8("Diamond1")) localizedTier = U8("Diamond 1");
+                        else if (PlayerRankData.TierToString == U8("Diamond2")) localizedTier = U8("Diamond 2");
+                        else if (PlayerRankData.TierToString == U8("Diamond3")) localizedTier = U8("Diamond 3");
+                        else if (PlayerRankData.TierToString == U8("Diamond4")) localizedTier = U8("Diamond 4");
+                        else if (PlayerRankData.TierToString == U8("Diamond5")) localizedTier = U8("Diamond 5");
+                        else if (PlayerRankData.TierToString == U8("Master1")) localizedTier = U8("Master");
+                        else if (PlayerRankData.TierToString == U8("Survivor1")) localizedTier = U8("Survivor");
+                        else if (PlayerRankData.TierToString == U8("Unranked")) localizedTier = U8("Unranked");
+                        else if (PlayerRankData.TierToString == U8("No KD")) localizedTier = U8("Unranked");
                     }
 
                     // 准备文本内容
@@ -2666,7 +2666,7 @@ public:
 
                     // 检查是否显示没有KD，如果是则使用皇家蓝色
                     ImColor tierColor = PlayerColors.infoUseColor;
-                    if (PlayerRankData.Tier == "" || PlayerRankData.TierToString == U8("没有KD") || PlayerRankData.TierToString == U8("未定级")) {
+                    if (PlayerRankData.Tier == "" || PlayerRankData.TierToString == U8("No KD") || PlayerRankData.TierToString == U8("Unranked")) {
                         tierColor = IM_COL32(65, 105, 225, 255);  // 皇家蓝色
                     }
 
@@ -2775,7 +2775,7 @@ public:
 
         if (EnemyCountInRange > 0)
         {
-            std::string infoText = std::format("| {}米内有{}个敌人 | 最近{}米 | {}队 |",
+            std::string infoText = std::format("| Within {}m: {} enemies | closest {}m | team {} |",
                 (int)detectionRange,
                 EnemyCountInRange,
                 (int)ClosestEnemyDistance,
@@ -2807,7 +2807,7 @@ public:
 
         if (IsanyAimMe) {
             // 生成文本
-            std::string warningText = "！！注意！！小心背后有人对准了你！！";
+            std::string warningText = "!! WARNING !! Someone is aiming at you !!";
 
             // 转换为 UTF-8 编码
             std::string utf8Text = Utils::StringToUTF8(warningText);

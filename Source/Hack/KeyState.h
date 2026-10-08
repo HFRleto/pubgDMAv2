@@ -15,16 +15,16 @@ namespace KeyState
 
 		if (!GameData.Keyboard.InitKeyboard())
 		{
-			Utils::Log(2, U8("[-] [OUTPUT] \u521d\u59cb\u5316\u70ed\u952e\u5931\u8d25\uff01\u8bf7\u91cd\u542f\u4e3b\u673a\uff01\uff01"));
+			Utils::Log(2, U8("[INIT] Initialisation des raccourcis clavier échouée : redémarrez le PC de jeu."));
 		}
 		else {
-			Utils::Log(1, U8("[-] [OUTPUT] \u521d\u59cb\u5316\u70ed\u952e\u6210\u529f\uff01\u8bf7\u5f00\u59cb\u8868\u6f14\uff01\uff01"));
+			Utils::Log(1, U8("[INIT] Raccourcis clavier initialisés."));
 			GameData.Keyboard.InitCursorPosition();//获取失败无法使用游戏机鼠标
 			//Utils::Log(1, U8("[-] [OUTPUT] 游戏机鼠标获取成功，当前可使用游戏机鼠标： % llx" ), GameData.Keyboard.GetAddrss());
 		}
 	}
 	void Update() {
-		Utils::Log(1, U8("[-] [OUTPUT] \u5f00\u59cb\u521d\u59cb\u5316 \u7ed8\u5236 & \u96f7\u8fbe"));
+		Utils::Log(1, U8("[OVERLAY] Initialisation de l'affichage et du radar..."));
 		while (true)
 		{
 			GameData.Keyboard.UpdateKeys();

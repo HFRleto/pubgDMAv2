@@ -1591,7 +1591,7 @@ struct FGameData
 			float ChareColor[4] = { 255.0f / 255.0f, 0.f / 255.0f, 0.f / 255.0f, 255.0f / 255.0f };
 			float TrajectoryColor[4] = { 255.0f / 255.0f, 255.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f }; // 淡黄色，透明度50%
 			float explosionrangeColor[4] = { 255.0f / 255.0f, 0.f / 255.0f, 0.f / 255.0f, 255.0f / 255.0f };
-			int CurrentLanguage = 1; // 1=简体中文 0=English，默认中文
+			int CurrentLanguage = 0; // 1 = chinois simplifié, 0 = anglais (défaut)
 		} Project;
 
 		struct

@@ -1625,95 +1625,95 @@ void PNSImG()
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/德拉贡诺夫.png";  //德拉贡诺夫
+	IconUrl = "Assets/image/Weapon/Dragunov.png";  //德拉贡诺夫
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/电击枪.png";  //电击枪
+	IconUrl = "Assets/image/Weapon/Stun Gun.png";  //电击枪
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/火箭筒.png";  //火箭筒
+	IconUrl = "Assets/image/Weapon/Panzerfaust.png";  //火箭筒
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/尖刺陷阱.png";  //尖刺陷阱
+	IconUrl = "Assets/image/Weapon/Spike Trap.png";  //尖刺陷阱
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/锯齿短喷.png";  //锯齿短喷
+	IconUrl = "Assets/image/Weapon/Sawed-Off.png";  //锯齿短喷
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/砍刀.png";  //砍刀
+	IconUrl = "Assets/image/Weapon/Machete.png";  //砍刀
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/篮圈手雷.png";  //蓝圈手雷
+	IconUrl = "Assets/image/Weapon/Bluezone Grenade.png";  //蓝圈手雷
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/镰刀.png";  //镰刀
+	IconUrl = "Assets/image/Weapon/Sickle.png";  //镰刀
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/莫辛甘纳.png";  //莫辛甘纳
+	IconUrl = "Assets/image/Weapon/Mosin Nagant.png";  //莫辛甘纳
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/弩.png";  //弩
+	IconUrl = "Assets/image/Weapon/Crossbow.png";  //弩
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/平底锅.png";  //平底锅
+	IconUrl = "Assets/image/Weapon/Pan.png";  //平底锅
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/撬棍.png";  //撬棍
+	IconUrl = "Assets/image/Weapon/Crowbar.png";  //撬棍
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/燃烧瓶.png";  //燃烧瓶
+	IconUrl = "Assets/image/Weapon/Molotov.png";  //燃烧瓶
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/沙漠之鹰.png";  //沙漠之鹰
+	IconUrl = "Assets/image/Weapon/Deagle.png";  //沙漠之鹰
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/闪光弹.png";  //闪光弹
+	IconUrl = "Assets/image/Weapon/Flashbang.png";  //闪光弹
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/手雷.png";  //手雷
+	IconUrl = "Assets/image/Weapon/Grenade.png";  //手雷
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/汤姆逊.png";  //汤姆逊
+	IconUrl = "Assets/image/Weapon/Tommy Gun.png";  //汤姆逊
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/蝎式手枪.png";  //蝎式手枪
+	IconUrl = "Assets/image/Weapon/Skorpion.png";  //蝎式手枪
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/信号枪.png";  //信号枪
+	IconUrl = "Assets/image/Weapon/Flare Gun.png";  //信号枪
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/烟雾弹.png";  //烟雾弹
+	IconUrl = "Assets/image/Weapon/Smoke Grenade.png";  //烟雾弹
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/野牛PP19.png";  //野牛PP19
+	IconUrl = "Assets/image/Weapon/PP-19 Bizon.png";  //野牛PP19
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/诱饵手雷.png";  //诱饵手雷
+	IconUrl = "Assets/image/Weapon/Decoy Grenade.png";  //诱饵手雷
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 
-	IconUrl = "Assets/image/Weapon/粘性炸弹.png";  //粘性炸弹
+	IconUrl = "Assets/image/Weapon/Sticky Bomb.png";  //粘性炸弹
 
 	GImGuiTextureMap[IconUrl] = Texture::LoadTexture(g_pd3dDevice, IconUrl);
 

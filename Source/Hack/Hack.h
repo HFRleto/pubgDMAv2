@@ -45,6 +45,67 @@ class Hack
 {
 public:
 
+	static const char* SceneName(Scene scene)
+	{
+		switch (scene) {
+		case Scene::FindProcess: return "RechercheProcessus";
+		case Scene::Lobby: return "Lobby";
+		case Scene::Gaming: return "EnPartie";
+		}
+		return "?";
+	}
+
+	// Journalise la chaîne de pointeurs quand la validité d'un maillon change, puis toutes les 10 s
+	// tant qu'un maillon est invalide ou qu'on est en partie (avec les compteurs).
+	static void LogPointerChain(bool gaming)
+	{
+		struct Link { const char* Name; uint64_t Value; };
+		const Link links[] = {
+			{ "UWorld", GameData.UWorld },
+			{ "GameInstance", GameData.GameInstance },
+			{ "GNames", GameData.GNames },
+			{ "GameState", GameData.GameState },
+			{ "LocalPlayer", GameData.LocalPlayer },
+			{ "PlayerController", GameData.PlayerController },
+			{ "AcknowledgedPawn", GameData.AcknowledgedPawn },
+			{ "CurrentLevel", GameData.CurrentLevel },
+			{ "ActorArray", GameData.ActorArray },
+			{ "PlayerCameraManager", GameData.PlayerCameraManager },
+		};
+		// hors partie, seuls les trois premiers maillons sont lus
+		const size_t count = gaming ? std::size(links) : 3;
+
+		static uint32_t lastMask = ~0u;
+		static auto lastLog = std::chrono::steady_clock::now();
+
+		uint32_t mask = gaming ? 0x80000000u : 0;
+		for (size_t i = 0; i < count; i++) {
+			// Utils::ValidPtr renvoie true quand le pointeur est invalide
+			if (Utils::ValidPtr(links[i].Value))
+				mask |= 1u << i;
+		}
+		const bool broken = (mask & 0x7FFFFFFFu) != 0;
+
+		const auto now = std::chrono::steady_clock::now();
+		if (mask == lastMask && (now - lastLog < 10s || (!broken && !gaming)))
+			return;
+		lastMask = mask;
+		lastLog = now;
+
+		std::string line;
+		char buffer[96];
+		for (size_t i = 0; i < count; i++) {
+			snprintf(buffer, sizeof(buffer), " %s=0x%llX%s", links[i].Name, (unsigned long long)links[i].Value,
+				Utils::ValidPtr(links[i].Value) ? "(INVALIDE)" : "");
+			line += buffer;
+		}
+		Utils::Log(broken ? 2 : 1, U8("[CHAINE] scène=%s%s"), SceneName(GameData.Scene), line.c_str());
+		if (gaming) {
+			Utils::Log(broken ? 2 : 1, U8("[ETAT] entités=%zu joueurs=%zu carte=%s FOV caméra=%.1f"),
+				Data::GetCacheEntitys().size(), Data::GetCachePlayers().size(), GameData.MapName.c_str(), GameData.Camera.FOV);
+		}
+	}
+
 	static void Update()
 	{
 		auto hScatter = mem.CreateScatterHandle();
@@ -58,6 +119,7 @@ public:
 
 			if (Utils::ValidPtr(GameData.UWorld) || GameData.Scene != Scene::Gaming)
 			{
+				LogPointerChain(false);
 				Sleep(GameData.ThreadSleep);
 				continue;
 			}
@@ -93,6 +155,7 @@ public:
 			GameData.bShowMouseCursor = bShowMouseCursor == 0x25 ? true : false;
 			GameData.PlayerInput = PlayerInput;
 			GameData.AntiCheatCharacterSyncManager = AntiCheatCharacterSyncManager;
+			LogPointerChain(true);
 			GameData.CameraViewTarget = 0;
 
 
@@ -144,13 +207,13 @@ public:
 		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
 		SIZE_T finalMemory = pmc.WorkingSetSize / (1024 * 1024);
 
-		Utils::Log(1, U8("[-] [OUTPUT] \u573A\u666F\u8D44\u6E90\u91CA\u653E\u5B8C\u6210\u3002\u5185\u5B58\u53D8\u5316: %zu MB -> %zu MB (锟斤拷锟斤拷 %zd MB)"),
+		Utils::Log(1, U8("[SCENE] Ressources de la scène libérées. Mémoire : %zu Mo -> %zu Mo (%zd Mo libérés)"),
 			initialMemory, finalMemory, initialMemory - finalMemory);
 	}
 
 	static void StartLoadMapModel() {
 		ReleaseLoadedModel();
-		Utils::Log(1, U8("[-] [OUTPUT] \u5F00\u59CB\u52A0\u8F7D\u5730\u56FE\u6A21\u578B..."));
+		Utils::Log(1, U8("[SCENE] Chargement du modèle de la carte..."));
 
 		if (GameData.Config.ESP.LowModel)
 		{
@@ -262,7 +325,7 @@ public:
 					{
 						gameProcessFound = false;
 						if (prevGameProcessFound) {
-							Utils::Log(2, U8("[-] [OUTPUT] \u6E38\u620F\u8FDB\u7A0B\u5DF2\u4E22\u5931\uFF0C\u5C1D\u8BD5\u6267\u884C\u9996\u6B21\u521D\u59CB\u5316..."));
+							Utils::Log(2, U8("[PROCESSUS] Processus du jeu perdu, réinitialisation de la carte DMA..."));
 							mem.Init("", false, false);
 							GameData.GameBase = 0;
 							GameData.PID = 0;
@@ -280,14 +343,14 @@ public:
 
 					gameProcessFound = true;
 					if (!prevGameProcessFound) {
-						Utils::Log(1, U8("[-] [OUTPUT] \u68C0\u6D4B\u5230\u65B0\u6E38\u620F\u8FDB\u7A0B\uFF0C\u6B63\u5728\u9644\u52A0..."));
+						Utils::Log(1, U8("[PROCESSUS] Processus du jeu détecté, attachement..."));
 						EntityLists.clear();
 						EntityInit();
 						Data::SetGNameLists(EntityLists);
 						Data::SetGNameListsByID({});
 						GameData.HookBase = mem.GetHookModuleBase();
 						KeyState::Init();
-						Utils::Log(1, U8("[-] [OUTPUT] \u6E38\u620F\u52A0\u8F7D\u6210\u529F\uFF0C\u5DF2\u9644\u52A0\u5230\u6E38\u620F"));
+						Utils::Log(1, U8("[PROCESSUS] Attaché au jeu : PID=%u base=0x%llX"), (unsigned)GameData.PID, (unsigned long long)GameData.GameBase);
 					}
 				}
 				prevGameProcessFound = gameProcessFound;
@@ -315,18 +378,18 @@ public:
 				Scene oldScene = GameData.Scene;
 				GameData.Scene = currentRealScene;
 
-				Utils::Log(1, U8("[-] [OUTPUT] \u573A\u666F\u72B6\u6001锟叫伙拷: 锟斤拷 %d -> 锟斤拷 %d"), (int)oldScene, (int)GameData.Scene);
+				Utils::Log(1, U8("[SCENE] Changement de scène : %s -> %s (carte : %s)"), SceneName(oldScene), SceneName(GameData.Scene), GameData.MapName.c_str());
 
 				if (oldScene == Scene::Gaming && GameData.Scene != Scene::Gaming)
 				{
-					Utils::Log(1, U8("[-] [OUTPUT] \u68C0\u6D4B\u5230\u73A9\u5BB6\u9000锟斤拷锟较凤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟侥ｏ拷锟?.."));
+					Utils::Log(1, U8("[SCENE] Sortie de partie détectée, libération du modèle..."));
 					ReleaseLoadedModel();
 
 				}
 
 				if (GameData.Scene == Scene::Gaming)
 				{
-					Utils::Log(0, U8("[-] [OUTPUT] \u5DF2\u8BFB\u53D6\u5230锟斤拷锟斤拷图锟斤拷准锟斤拷锟斤拷锟斤拷模锟斤拷..."));
+					Utils::Log(0, U8("[SCENE] Entrée en partie : lecture de la liste des joueurs, puis chargement du modèle..."));
 					Players::ReadPlayerLists();
 					const auto loadDelay = 1s;
 					std::this_thread::sleep_for(loadDelay);
@@ -354,12 +417,12 @@ public:
 			{
 				if (GameData.Scene == Scene::Gaming)
 				{
-					Utils::Log(1, U8("[-] [OUTPUT] 锟秸碉拷锟街讹拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟铰硷拷锟截碉拷图模锟斤拷..."));
+					Utils::Log(1, U8("[SCENE] Rechargement manuel du modèle de la carte demandé..."));
 					StartLoadMapModel();
 				}
 				else
 				{
-					Utils::Log(2, U8("[-] [OUTPUT] 锟斤拷前锟斤拷锟斤拷锟斤拷戏锟斤拷锟斤拷锟斤拷锟睫凤拷锟斤拷锟斤拷模锟酵★拷"));
+					Utils::Log(2, U8("[SCENE] Pas en partie : impossible de recharger le modèle."));
 				}
 			}
 			//if (currentRealScene != GameData.Scene)
@@ -499,13 +562,21 @@ public:
 		//Offset::Init();
 
 		Offset::Sever_Init();
+		Utils::Log(1, U8("[OFFSET] %zu offsets chargés. UWorld=0x%llX GNames=0x%llX XenuineDecrypt=0x%llX"),
+			GameData.Offset.size(), (unsigned long long)GameData.Offset["UWorld"],
+			(unsigned long long)GameData.Offset["GNames"], (unsigned long long)GameData.Offset["XenuineDecrypt"]);
+		Utils::Log(1, U8("[OFFSET] GameInstance=0x%llX GameState=0x%llX LocalPlayer=0x%llX PlayerController=0x%llX CurrentLevel=0x%llX Actors=0x%llX"),
+			(unsigned long long)GameData.Offset["GameInstance"], (unsigned long long)GameData.Offset["GameState"],
+			(unsigned long long)GameData.Offset["LocalPlayer"], (unsigned long long)GameData.Offset["PlayerController"],
+			(unsigned long long)GameData.Offset["CurrentLevel"], (unsigned long long)GameData.Offset["Actors"]);
 		if (GameData.Offset["UWorld"] == 0 || GameData.Offset["GameInstance"] == 0 || GameData.Offset["PlayerController"] == 0) {
-			Utils::Log(2, "Offset init failed. Check Offset.h for hardcoded values.");
+			Utils::Log(2, U8("[OFFSET] Initialisation échouée : UWorld, GameInstance ou PlayerController vaut 0 dans Offset.h."));
 			system("pause");
 			return;
 		}
 
 		EntityInit();
+		Utils::Log(1, U8("[INIT] %zu types d'entités connus."), EntityLists.size());
 
 		for (const auto& item : EntityLists)
 		{
@@ -518,29 +589,29 @@ public:
 
 				std::unordered_map<std::string, int> AWeaponGroupOverrides = {
 					{"Groza", 1}, {"Beryl M762", 1}, {"M416", 1}, {"ACE32", 1}, {"FAMASI", 1},
-					{"AUG", 1}, {"巴雷特", 1}, {"M24", 1}, {"AWM", 1}, {"Kar98k", 1},
+					{"AUG", 1}, {"Barrett", 1}, {"M24", 1}, {"AWM", 1}, {"Kar98k", 1},
 					{"Mk14", 1}, {"Mk12", 1}, {"SKS", 1}, {"S1897", 1}, {"P90", 1},
-					{"SLR", 1}, {"信号枪", 1}, {"MG3", 1}
+					{"SLR", 1}, {"Flare Gun", 1}, {"MG3", 1}
 				};
 
 				std::unordered_map<std::string, int> BWeaponGroupOverrides = {
-					{"补偿器 (步枪)", 2}, {"消音器 (狙击枪)", 2}, {"红点", 2}, {"6倍镜", 2},
-					{"8倍镜", 2}, {"热成像瞄准镜", 2}, {"15倍镜", 2}, {"战术枪托", 2},
-					{"垂直握把", 2}, {"半截握把", 2}, {"快速扩容弹匣 (步枪)", 2}, {"快速扩容弹匣 (狙击枪)", 2},
-					{"扩容弹匣 (狙击枪)", 2}, {"战术枪托", 2}, {"托腮板", 2}, {"子弹袋", 2}
+					{"Compensator (AR)", 2}, {"Suppressor (SR)", 2}, {"Red Dot", 2}, {"6x Scope", 2},
+					{"8x Scope", 2}, {"Thermal Scope", 2}, {"15x Scope", 2}, {"Tactical Stock", 2},
+					{"Vertical Grip", 2}, {"Half Grip", 2}, {"Ext. QuickDraw Mag (AR)", 2}, {"Ext. QuickDraw Mag (SR)", 2},
+					{"Extended Mag (SR)", 2}, {"Tactical Stock", 2}, {"Cheek Pad", 2}, {"Bullet Loops", 2}
 				};
 
 				std::unordered_map<std::string, int> CWeaponGroupOverrides = {
-					{"防弹衣Lv3", 3}, {"头盔Lv3", 3}, {"头盔Lv2", 3}, {"背包Lv3", 3},
-					{"电波干扰背包", 3}, {"背包Lv2", 3}, {"防弹衣Lv2", 3}, {"吉利服", 3},
-					{"手雷", 3}, {"烟雾弹", 3}, {"平底锅", 3}, {"自救器", 3},
-					{"紧急呼救器", 3}, {"蓝色晶片发射器", 3}, {"蓝色晶片", 3}, {"三合一维修套件", 3}
+					{"Vest Lv3", 3}, {"Helmet Lv3", 3}, {"Helmet Lv2", 3}, {"Backpack Lv3", 3},
+					{"Jammer Pack", 3}, {"Backpack Lv2", 3}, {"Vest Lv2", 3}, {"Ghillie Suit", 3},
+					{"Grenade", 3}, {"Smoke Grenade", 3}, {"Pan", 3}, {"Self AED", 3},
+					{"Emergency Pickup", 3}, {"Blue Chip Transmitter", 3}, {"Blue Chip", 3}, {"3-in-1 Repair Kit", 3}
 				};
 
 				std::unordered_map<std::string, int> DWeaponGroupOverrides = {
-					{"褐湾钥匙", 4}, {"帕拉莫钥匙", 4}, {"泰戈钥匙", 4}, {"海岛钥匙", 4},
-					{"雪地门禁卡", 4}, {"蒂斯顿门禁卡", 4}, {"急救包", 4}, {"能量饮料", 4},
-					{"止疼药", 4}
+					{"Haven Key", 4}, {"Paramo Key", 4}, {"Taego Key", 4}, {"Erangel Key", 4},
+					{"Vikendi Keycard", 4}, {"Deston Keycard", 4}, {"First Aid Kit", 4}, {"Energy Drink", 4},
+					{"Painkiller", 4}
 				};
 
 				// **锟斤拷始锟斤拷为未锟斤拷锟斤拷**
@@ -568,11 +639,11 @@ public:
 
 		if (!mem.Init("TslGame.exe", false, false))
 		{
-			Utils::Log(2, U8("[-] [OUTPUT] \u672A\u68C0\u6D4B\u5230\u786C\u4EF6\u5339\u914D\u7684\u52A0\u8F7D\u7B56\u7565"));
+			Utils::Log(2, U8("[DMA] Initialisation échouée : carte DMA absente, pilote manquant ou PC de jeu injoignable."));
 			system("pause");
 		}
 		else {
-			Utils::Log(1, U8("[-] [OUTPUT] \u786C\u4EF6\u521D\u59CB\u5316\u6210\u529F\uFF0C\u7B49\u5F85\u70ED\u952E\u52A0\u8F7D"));
+			Utils::Log(1, U8("[DMA] Carte DMA initialisée, en attente du processus du jeu."));
 		}
 
 		KeyState::Init();
@@ -581,6 +652,7 @@ public:
 		Data::SetGNameListsByID({});
 
 
+		Utils::Log(1, U8("[INIT] Démarrage des threads de lecture."));
 		std::thread UpdatePIDThread(UpdatePID);
 		std::thread UpdateThread(Update);
 		std::thread UpdateKeyStateThread(KeyState::Update);

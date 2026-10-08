@@ -70,7 +70,7 @@ namespace MenuPlayerLists
         ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
         ImGui::SetNextWindowSize({ Style::Window::PlayerListsSize.x + Spacing.x, Style::Window::PlayerListsSize.y + Spacing.y });
 
-        if (GameData.Config.Window.Players && ImGui::Begin(U8("玩家列表"), &GameData.Config.Window.Players, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
+        if (GameData.Config.Window.Players && ImGui::Begin(U8("Player list"), &GameData.Config.Window.Players, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize))
         {
             ImVec2 Pos = ImGui::GetWindowPos();
             Pos.x += Spacing.x / 2;
@@ -80,17 +80,17 @@ namespace MenuPlayerLists
 
             ImGui::SetCursorPos(ImVec2(Style::Padding + Spacing.x / 2, Style::Padding));
             ImGui::PushFont(FontAtlas->Fonts[1]);
-            ImGui::Text(U8("玩家列表"));
+            ImGui::Text(U8("Player list"));
             ImGui::PopFont();
             
             ImGui::SetCursorPos(ImVec2(Style::Padding + Spacing.x / 2, Style::Padding + 40));
 
-            static const char* filterPlayerList[] = { U8("全部名单"), U8("黑名单"), U8("白名单") };
+            static const char* filterPlayerList[] = { U8("All lists"), U8("Blacklist"), U8("Whitelist") };
             static int filterPlayerListIndex = 0;
 
   
             ImGui::SetNextItemWidth(100);
-            if (ImGui::BeginCombo(U8("##名单类型"), filterPlayerList[filterPlayerListIndex])) {
+            if (ImGui::BeginCombo(U8("##ListType"), filterPlayerList[filterPlayerListIndex])) {
                 for (int i = 0; i < IM_ARRAYSIZE(filterPlayerList); i++) {
                     bool isSelected = (filterPlayerListIndex == i);
                     if (ImGui::Selectable(filterPlayerList[i], isSelected))
@@ -104,10 +104,10 @@ namespace MenuPlayerLists
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
 
-            static const char* filterPlayerType[] = { U8("全部类型"), U8("玩家"), U8("合作者"), U8("队友"), U8("本人"), U8("人机") };
+            static const char* filterPlayerType[] = { U8("All types"), U8("Player"), U8("Partner"), U8("Teammate"), U8("Me"), U8("Bot") };
             static int filterPlayerTypeIndex = 0;
 
-            if (ImGui::BeginCombo(U8("##玩家类型"), filterPlayerType[filterPlayerTypeIndex])) {
+            if (ImGui::BeginCombo(U8("##PlayerType"), filterPlayerType[filterPlayerTypeIndex])) {
                 for (int i = 0; i < IM_ARRAYSIZE(filterPlayerType); i++) {
                     bool isSelected = (filterPlayerTypeIndex == i);
                     if (ImGui::Selectable(filterPlayerType[i], isSelected))
@@ -121,8 +121,8 @@ namespace MenuPlayerLists
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
 
-            static const char* items[] = { U8("不查战绩"), U8("TPP单人"), U8("TPP小队"), U8("FPP单人"), U8("FPP小队") };
-            if (ImGui::BeginCombo(U8("##战绩数据"), items[GameData.Config.PlayerList.RankMode])) {
+            static const char* items[] = { U8("No stats"), U8("TPP solo"), U8("TPP squad"), U8("FPP solo"), U8("FPP squad") };
+            if (ImGui::BeginCombo(U8("##StatsMode"), items[GameData.Config.PlayerList.RankMode])) {
                 for (int i = 0; i < IM_ARRAYSIZE(items); i++) {
                     bool isSelected = (GameData.Config.PlayerList.RankMode == i);
                     if (ImGui::Selectable(items[i], isSelected))
@@ -136,7 +136,7 @@ namespace MenuPlayerLists
 
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
-            ImGui::InputTextEx(U8("赛季选择"), "30", GameData.Config.ESP.RankSize, IM_ARRAYSIZE(GameData.Config.ESP.RankSize), ImVec2(0, 0), NULL);
+            ImGui::InputTextEx(U8("Season"), "30", GameData.Config.ESP.RankSize, IM_ARRAYSIZE(GameData.Config.ESP.RankSize), ImVec2(0, 0), NULL);
 
 
 
@@ -147,7 +147,7 @@ namespace MenuPlayerLists
             ImGui::SameLine();
             ImGui::SetNextItemWidth(100);
 
-            ImGui::InputText(U8("搜索玩家"), filterPlayerName, sizeof(filterPlayerName));
+            ImGui::InputText(U8("Search player"), filterPlayerName, sizeof(filterPlayerName));
 ;
 
             static ImGuiTableFlags flags = ImGuiTableFlags_Sortable | ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg /*| ImGuiTableFlags_BordersOuter | ImGuiTableFlags_BordersV*/ | ImGuiTableFlags_Reorderable | ImGuiTableFlags_Hideable;
@@ -164,20 +164,20 @@ namespace MenuPlayerLists
 
             ImGui::PushStyleVar(ImGuiStyleVar_CellPadding, ImVec2(4.0f, 8.0f));
             ImGui::SetCursorPos(ImVec2(Style::Padding + Spacing.x / 2, Style::Padding + 70));
-            if (ImGui::BeginTable(U8("玩家列表"), 11, flags, ImVec2(800.f, 365.0f)))
+            if (ImGui::BeginTable(U8("Player list"), 11, flags, ImVec2(800.f, 365.0f)))
             {
                 ImGui::TableSetupScrollFreeze(0, 1);
-                ImGui::TableSetupColumn(U8("  队伍"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultSort, 50.0f);
-                ImGui::TableSetupColumn(U8("玩家昵称"), ImGuiTableColumnFlags_WidthFixed, 125.0f);
-                ImGui::TableSetupColumn(U8("段位"), ImGuiTableColumnFlags_WidthFixed, 70.0f);
-                ImGui::TableSetupColumn(U8("分数"), ImGuiTableColumnFlags_WidthFixed, 50.f);
+                ImGui::TableSetupColumn(U8("  Team"), ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultSort, 50.0f);
+                ImGui::TableSetupColumn(U8("Player name"), ImGuiTableColumnFlags_WidthFixed, 125.0f);
+                ImGui::TableSetupColumn(U8("Rank"), ImGuiTableColumnFlags_WidthFixed, 70.0f);
+                ImGui::TableSetupColumn(U8("Points"), ImGuiTableColumnFlags_WidthFixed, 50.f);
                 ImGui::TableSetupColumn(U8("KD"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
-                ImGui::TableSetupColumn(U8("吃鸡率"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
-                ImGui::TableSetupColumn(U8("击杀"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
-                ImGui::TableSetupColumn(U8("伤害"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
-                ImGui::TableSetupColumn(U8("等级"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
-                ImGui::TableSetupColumn(U8("类型"), ImGuiTableColumnFlags_WidthFixed, 60.0f);
-                ImGui::TableSetupColumn(U8("名单"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
+                ImGui::TableSetupColumn(U8("Win rate"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
+                ImGui::TableSetupColumn(U8("Kills"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
+                ImGui::TableSetupColumn(U8("Damage"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
+                ImGui::TableSetupColumn(U8("Level"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
+                ImGui::TableSetupColumn(U8("Type"), ImGuiTableColumnFlags_WidthFixed, 60.0f);
+                ImGui::TableSetupColumn(U8("List"), ImGuiTableColumnFlags_WidthFixed, 50.0f);
                 ImGui::TableHeadersRow();
 
                 std::unordered_map<std::string, PlayerRankList> PlayerRankLists = Data::GetPlayerRankLists();
@@ -265,24 +265,24 @@ namespace MenuPlayerLists
                             RankWinRatio = std::to_string(static_cast<int>(PlayerRankData.WinRatio)) + "%";
                         }
 
-                        std::string PlayerType = U8("玩家"), PlayerListType = U8("默认");
+                        std::string PlayerType = U8("Player"), PlayerListType = U8("Default");
                         if (player.PartnerLevel > 0) {
-                            PlayerType = U8("合作者Lvl.") + std::to_string(player.PartnerLevel);
+                            PlayerType = U8("Partner Lvl.") + std::to_string(player.PartnerLevel);
                         }
                         else if (player.IsSelf) {
-                            PlayerType = U8("本人");
+                            PlayerType = U8("Me");
                         }
 						else if (player.IsMyTeam) {
-							PlayerType = U8("队友");
+							PlayerType = U8("Teammate");
 						}
                         if (player.StatusType == 12) {
-                            PlayerType = U8("人机");
+                            PlayerType = U8("Bot");
                         }
                         if (player.ListType == 1) {
-                            PlayerListType = U8("黑名单");
+                            PlayerListType = U8("Blacklist");
                         }
                         else if (player.ListType == 2) {
-                            PlayerListType = U8("白名单");
+                            PlayerListType = U8("Whitelist");
                         }
 
                         if ((!filterPlayerListIndex && !filterPlayerTypeIndex && !filterPlayerName[0]) || (filterPlayerListIndex > 0 && strstr(filterPlayerList[filterPlayerListIndex], PlayerListType.c_str())) || (filterPlayerTypeIndex > 0 && strstr(PlayerType.c_str(), filterPlayerType[filterPlayerTypeIndex])) || (filterPlayerName[0] && strstr(player.PlayerName.c_str(), filterPlayerName) != nullptr)) {

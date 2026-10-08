@@ -14,7 +14,7 @@ public:
     {
         // 确保COM端口号有效
         if (com <= 0) {
-            std::cout << "错误: COM端口号无效 (" << com << ")" << std::endl;
+            std::cout << "Error: invalid COM port number (" << com << ")" << std::endl;
             return false;
         }
         
@@ -23,7 +23,7 @@ public:
         bool isOpen = serialPort.open(com, 115200);
         
         if (!isOpen) {
-            std::cout << "错误: 无法打开COM" << com << std::endl;
+            std::cout << "Error: cannot open COM" << com << std::endl;
             return false;
         }
         

@@ -241,11 +241,12 @@ namespace Utils
 	{
 		if (!wstr) return "";
 
-		int strleng = WideCharToMultiByte(CP_ACP, NULL, wstr, -1, NULL, 0, NULL, FALSE);
+		// CP_UTF8 et non CP_ACP : les noms venant du jeu restent lisibles quelle que soit la langue de Windows
+		int strleng = WideCharToMultiByte(CP_UTF8, NULL, wstr, -1, NULL, 0, NULL, NULL);
 		if (strleng <= 0) return "";
 
 		std::string result(strleng - 1, '\0');
-		WideCharToMultiByte(CP_ACP, NULL, wstr, -1, &result[0], strleng, NULL, FALSE);
+		WideCharToMultiByte(CP_UTF8, NULL, wstr, -1, &result[0], strleng, NULL, NULL);
 
 		return result;
 	}
@@ -292,9 +293,10 @@ namespace Utils
 		return ss.str();
 	}
 
+	// Les chaînes du programme sont déjà en UTF-8 (compilation avec /utf-8, UnicodeToAnsi en CP_UTF8) :
+	// les reconvertir depuis la page de codes du système les abîmerait.
 	inline std::string StringToUTF8(const std::string& str) {
-		std::wstring wideStr = StringToWstring(str);
-		return WstringToUTF8(wideStr);
+		return str;
 	}
 
 	inline std::string getCurrentTime() {

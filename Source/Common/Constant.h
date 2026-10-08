@@ -218,28 +218,28 @@ inline std::unordered_map<std::string, FMapSize, FnvHash> MapsSize = {
 };
 
 inline std::unordered_map<std::string, std::string, FnvHash> RankTierToChinese = {
-	{"Unranked", U8("未定级")},
-	{"Bronze", U8("青铜")},
-	{"Silver", U8("白银")},
-	{"Gold", U8("黄金")},
-	{"Platinum", U8("铂金")},
-	{"Crystal", U8("水晶")},
-	{"Diamond", U8("钻石")},
-	{"Master", U8("大师")},
-	{"Survivor", U8("生存者")},
+	{"Unranked", U8("Unranked")},
+	{"Bronze", U8("Bronze")},
+	{"Silver", U8("Silver")},
+	{"Gold", U8("Gold")},
+	{"Platinum", U8("Platinum")},
+	{"Crystal", U8("Crystal")},
+	{"Diamond", U8("Diamond")},
+	{"Master", U8("Master")},
+	{"Survivor", U8("Survivor")},
 	{"-", U8("-")},
 };
 
 inline std::unordered_map<std::string, std::string, FnvHash> RankTierToLChinese = {
-	{"Unranked", "未定级"},
-	{"Bronze", "青铜"},
-	{"Silver", "白银"},
-	{"Gold", "黄金"},
-	{"Platinum", "铂金"},
-	{"Crystal", "水晶"},
-	{"Diamond", "钻石"},
-	{"Master", "大师"},
-	{"Survivor", "生存者"},
+	{"Unranked", "Unranked"},
+	{"Bronze", "Bronze"},
+	{"Silver", "Silver"},
+	{"Gold", "Gold"},
+	{"Platinum", "Platinum"},
+	{"Crystal", "Crystal"},
+	{"Diamond", "Diamond"},
+	{"Master", "Master"},
+	{"Survivor", "Survivor"},
 	{"-", "-"},
 };
 
