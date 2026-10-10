@@ -57,7 +57,18 @@ namespace KeyState
 
 			for (auto Key : Keys)
 			{
-				if (GameData.Keyboard.WasKeyPressed(Key.first))
+				// Les raccourcis sont acceptés depuis le clavier du PC de jeu (DMA) et depuis celui de ce PC.
+				static bool LocalKeyDown[256] = {};
+				bool LocalPressed = false;
+				if (Key.first > 0 && Key.first < 256)
+				{
+					const bool Down = (GetAsyncKeyState(Key.first) & 0x8000) != 0;
+					LocalPressed = Down && !LocalKeyDown[Key.first];
+					LocalKeyDown[Key.first] = Down;
+				}
+				const bool RemotePressed = GameData.Keyboard.WasKeyPressed(Key.first);
+
+				if (RemotePressed || LocalPressed)
 				{
 					for (auto KeyName : Key.second)
 					{
