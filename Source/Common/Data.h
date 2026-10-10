@@ -547,6 +547,12 @@ struct Player
 	float Health = 0.0f;
 	float Distance = 0.0f;
 	float GroggyHealth = 0.0f;
+	float GroggyHealthMax = 0.0f;
+	uint32_t StateBitsRaw = 0;
+	uint8_t KilledBitsRaw = 0;
+	uint8_t DbnoUp = 0;
+	uint8_t DbnoAlive = 0;
+	uint8_t DbnoValid = 0;
 	int KillCount = 0;
 	int SurvivalTier = 0;
 	int SurvivalLevel = 0;
@@ -570,6 +576,8 @@ struct Player
 	bool IsVisible = false;
 	bool IsAimMe = false;
 	int TeamID = -100;
+	int TeamIDFromState = -100;
+	uint64_t TeamObject = 0;
 	bool IsMortar = false;
 	bool IsReloading = false;
 	FVector Velocity{};
@@ -1078,6 +1086,7 @@ struct FGameData
 	uint64_t PlayerCameraManager;
 	uint64_t CameraViewTarget;
 	int LocalPlayerTeamID;
+	uint64_t LocalPlayerTeamObject = 0;
 	uint64_t CameraRootComponent;
 	FRotator ControlRotation;
 	FRotator RecoilRotation; // 后坐力旋转数据

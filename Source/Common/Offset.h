@@ -43,8 +43,9 @@ namespace Offset
 	constexpr uint64_t CameraCacheRotation = 0x464;           // 2609 : SDK
 	constexpr uint64_t CameraCacheFOV = 0x470;                // 2609 : SDK
 
-	constexpr uint64_t LastTeamNum = 0x1E10;                  // 2609 : SDK
-	constexpr uint64_t TeamNumber = 0xB80;                    // 2609 : SDK
+	constexpr uint64_t LastTeamNum = 0x1E10;                  // 2609 : SDK ; valeur déduite par adjacency, source la moins fiable
+	constexpr uint64_t TeamNumber = 0xB80;                    // 2609 : SDK ; TslPlayerState::TeamNumber, source la plus fiable
+	constexpr uint64_t TeamPtr = 0x1E00;                      // 2609 : nouvelle liste ; pointeur d'objet Team partagé par une même équipe
 
 	constexpr uint64_t MyHUD = 0x4C8;                         // 2609 : SDK
 	constexpr uint64_t BlockInputWidgetList = 0x5C8;          // 2609 : SDK
@@ -93,7 +94,10 @@ namespace Offset
 	constexpr uint64_t Health_keys13 = 0x2935907;             // 2609 : script
 	constexpr uint64_t Health_keys14 = 0x59099E38;            // 2609 : script
 	constexpr uint64_t Health_keys15 = 0xF3C62AD8;            // 2609 : script
-	constexpr uint64_t GroggyHealth = 0x18C0;                 // 2609 : SDK
+	constexpr uint64_t GroggyHealth = 0x18C0;                 // 2609 : SDK (= DBNOHealth, seul float de vie encore lisible côté client)
+	constexpr uint64_t DBNOHealthMax = 0x1724;                // 2609 : nouvelle liste
+	constexpr uint64_t HealthMax = 0xA50;                     // 2609 : nouvelle liste
+	constexpr uint64_t StateBits = 0x1B70;                    // 2609 : trouvé à la main, absent des deux listes ; bit0 = DBNO, bit1 = dead
 	//constexpr uint64_t BlueBlockerGaugeTotalMax = 0x10; // inutilisé
 
 	constexpr uint64_t PlayerArray = 0x418;                   // 2609 : SDK
@@ -102,6 +106,8 @@ namespace Offset
 	constexpr uint64_t PlayerStatusType = 0x440;              // PAS À JOUR (valeur 2605)
 	constexpr uint64_t SquadMemberIndex = 0xBA8;              // 2609 : SDK
 	constexpr uint64_t PlayerState = 0x428;                   // 2609 : SDK
+	constexpr uint64_t KilledBits = 0xAD8;                    // 2609 : nouvelle liste ; TslPlayerStateBase::@OnRep_Killed, lisible même après despawn du corps
+	constexpr uint64_t KilledMask = 0x1;                      // 2609 : nouvelle liste
 	constexpr uint64_t PlayerStatistics = 0xA2C;              // PAS À JOUR (valeur 2605)
 	constexpr uint64_t DamageDealtOnEnemy = 0xAE4;            // 2609 : SDK
 	constexpr uint64_t SpectatedCount = 0x16C4;               // 2609 : SDK
@@ -164,14 +170,15 @@ namespace Offset
 	constexpr uint64_t DampingRate = 0x54;                    // 2609 : déduit, à vérifier
 	constexpr uint64_t ShapeRadius = 0x48;                    // 2609 : déduit, à vérifier
 
-	constexpr uint64_t DroppedItemGroup = 0xF8;               // PAS À JOUR (valeur 2605) ; le script renvoie 0x0, invalide
+	constexpr uint64_t DroppedItemGroup = 0x130;              // 2609 : nouvelle liste (structurel, à vérifier)
 	constexpr uint64_t ItemPackageItems = 0x580;              // 2609 : SDK
-	constexpr uint64_t DroppedItemGroupUItem = 0x870;         // PAS À JOUR (valeur 2605)
+	constexpr uint64_t DroppedItemGroupUItem = 0x888;         // 2609 : nouvelle liste
 
 	constexpr uint64_t AttachedItems = 0x868;                 // 2609 : SDK
-	constexpr uint64_t WeaponAttachmentData = 0x128;          // PAS À JOUR (valeur 2605)
+	constexpr uint64_t WeaponAttachmentData = 0x290;          // 2609 : nouvelle liste
 	constexpr uint64_t ItemTable = 0xB0;                      // 2609 : déduit du SDK (zone non décrite, inchangé), à vérifier
-	constexpr uint64_t ItemID = 0x240;                        // PAS À JOUR (valeur 2605) ; le script renvoie 0x0, invalide
+	constexpr uint64_t ItemID = 0x274;                        // 2609 : nouvelle liste (champ FName)
+	constexpr uint64_t ItemIDIndexOffset = 0x4;               // 2609 : dword ComparisonIndex a +4 du champ FName (mettre 0x0 si les items ressortent vides)
 	constexpr uint64_t DroppedItem = 0x470;                   // 2609 : SDK
 
 	constexpr uint64_t AnimScriptInstance = 0xE30;            // 2609 : SDK
@@ -186,9 +193,9 @@ namespace Offset
 
 	//constexpr uint64_t VTable = 0xA68; // inutilisé
 	//constexpr uint64_t bIsDBNO_CP = 0x931; // inutilisé
-	//constexpr uint64_t bIsDBNO0 = 0x353A; // inutilisé
-	//constexpr uint64_t bIsDBNO1 = 0x3538; // inutilisé
-	//constexpr uint64_t bIsDBNO2 = 0x3539; // inutilisé
+	constexpr uint64_t bIsDBNO1 = 0x3588;                   // 2609 : nouvelle liste (structurel, à vérifier) ; up
+	constexpr uint64_t bIsDBNO2 = 0x3589;                   // 2609 : nouvelle liste (structurel, à vérifier) ; alive
+	constexpr uint64_t bIsDBNO0 = 0x358A;                   // 2609 : nouvelle liste (structurel, à vérifier) ; validator
 	constexpr uint64_t bIsScoping_CP = 0x865;                 // 2609 : SDK
 	//constexpr uint64_t bIsPreparingThrow_CP = 0x540; // inutilisé
 	//constexpr uint64_t bIsThrowing_CP = 0x938; // inutilisé
@@ -292,6 +299,9 @@ namespace Offset
 		//GameData.Offset["Health5"] = Health5; // inutilisé
 		//GameData.Offset["Health6"] = Health6; // inutilisé
 		GameData.Offset["GroggyHealth"] = GroggyHealth;
+		GameData.Offset["DBNOHealthMax"] = DBNOHealthMax;
+		GameData.Offset["HealthMax"] = HealthMax;
+		GameData.Offset["StateBits"] = StateBits;
 		//GameData.Offset["BlueBlockerGaugeTotalMax"] = BlueBlockerGaugeTotalMax; // inutilisé
 
 		GameData.Offset["DecryptedHealthOffsets0"] = Health_keys0;
@@ -347,12 +357,15 @@ namespace Offset
 		// --- Équipe / infos joueur ---
 		GameData.Offset["LastTeamNum"] = LastTeamNum;
 		GameData.Offset["TeamNumber"] = TeamNumber;
+		GameData.Offset["TeamPtr"] = TeamPtr;
 		GameData.Offset["PlayerArray"] = PlayerArray;
 		GameData.Offset["AccountId"] = AccountId;
 		GameData.Offset["PlayerName"] = PlayerName;
 		GameData.Offset["PlayerStatusType"] = PlayerStatusType;
 		GameData.Offset["SquadMemberIndex"] = SquadMemberIndex;
 		GameData.Offset["PlayerState"] = PlayerState;
+		GameData.Offset["KilledBits"] = KilledBits;
+		GameData.Offset["KilledMask"] = KilledMask;
 		GameData.Offset["PlayerStatistics"] = PlayerStatistics;
 		GameData.Offset["DamageDealtOnEnemy"] = DamageDealtOnEnemy;
 		GameData.Offset["SpectatedCount"] = SpectatedCount;
@@ -436,6 +449,7 @@ namespace Offset
 
 		// --- Objets ---
 		GameData.Offset["ItemID"] = ItemID;
+		GameData.Offset["ItemIDIndexOffset"] = ItemIDIndexOffset;
 		GameData.Offset["ItemTable"] = ItemTable;
 		GameData.Offset["ItemPackageItems"] = ItemPackageItems;
 		GameData.Offset["DroppedItemGroup"] = DroppedItemGroup;
@@ -493,9 +507,9 @@ namespace Offset
 		//GameData.Offset["bIsThrowing_CP"] = bIsThrowing_CP; // inutilisé
 		//GameData.Offset["bIsFlashed_CP"] = bIsFlashed_CP; // inutilisé
 		//GameData.Offset["VTable"] = VTable; // inutilisé
-		//GameData.Offset["bIsDBNO0"] = bIsDBNO0; // inutilisé
-		//GameData.Offset["bIsDBNO1"] = bIsDBNO1; // inutilisé
-		//GameData.Offset["bIsDBNO2"] = bIsDBNO2; // inutilisé
+		GameData.Offset["bIsDBNO0"] = bIsDBNO0;
+		GameData.Offset["bIsDBNO1"] = bIsDBNO1;
+		GameData.Offset["bIsDBNO2"] = bIsDBNO2;
 
 		// --- Sockets statiques ---
 		GameData.Offset["StaticSockets"] = StaticSockets;

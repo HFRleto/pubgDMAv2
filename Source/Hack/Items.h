@@ -66,7 +66,7 @@ public:
             mem.ExecuteReadScatter(hScatter);
             for (auto& Item : CacheInventoryItemInfos)
             {
-                mem.AddScatterRead(hScatter, Item.second.ItemTable + GameData.Offset["ItemID"], (int*)&Item.second.ItemID);
+                mem.AddScatterRead(hScatter, Item.second.ItemTable + GameData.Offset["ItemID"] + GameData.Offset["ItemIDIndexOffset"], (int*)&Item.second.ItemID);
             }
             mem.ExecuteReadScatter(hScatter);
 
@@ -185,7 +185,7 @@ public:
 
                     for (auto& Item : WeaponAttachmentItems)
                     {
-                        mem.AddScatterRead(hScatter, Item.WeaponAttachmentData + GameData.Offset["ItemID"], &Item.ItemID);
+                        mem.AddScatterRead(hScatter, Item.WeaponAttachmentData + GameData.Offset["ItemID"] + GameData.Offset["ItemIDIndexOffset"], &Item.ItemID);
                     }
 
                     mem.ExecuteReadScatter(hScatter);
@@ -297,7 +297,7 @@ public:
                     {
                         for (auto& DroppedItemGroupItem : Item.second.Items)
                         {
-                            mem.AddScatterRead(hScatter, DroppedItemGroupItem.ItemTable + GameData.Offset["ItemID"], (int*)&DroppedItemGroupItem.ItemID);
+                            mem.AddScatterRead(hScatter, DroppedItemGroupItem.ItemTable + GameData.Offset["ItemID"] + GameData.Offset["ItemIDIndexOffset"], (int*)&DroppedItemGroupItem.ItemID);
                         }
                     }
 
@@ -325,7 +325,7 @@ public:
 
                     for (auto& Item : CacheDroppedItems)
                     {
-                        mem.AddScatterRead(hScatter, Item.second.ItemTable + GameData.Offset["ItemID"], (int*)&Item.second.ID);
+                        mem.AddScatterRead(hScatter, Item.second.ItemTable + GameData.Offset["ItemID"] + GameData.Offset["ItemIDIndexOffset"], (int*)&Item.second.ID);
                     }
 
                     mem.ExecuteReadScatter(hScatter);

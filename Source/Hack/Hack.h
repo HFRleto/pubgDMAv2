@@ -164,9 +164,18 @@ public:
 				auto ViewTargetEntityInfo = Data::GetGNameListsByIDItem(ViewTargetID);
 				if (ViewTargetEntityInfo.Type == EntityType::Player || ViewTargetEntityInfo.Type == EntityType::AI)
 				{
+					uint64_t LocalPlayerState = Decrypt::Xe(mem.Read<uint64_t>(CacheCameraViewTarget + GameData.Offset["PlayerState"]));
 					int TeamID = mem.Read<int>(CacheCameraViewTarget + GameData.Offset["LastTeamNum"]);
+					uint64_t TeamObject = mem.Read<uint64_t>(CacheCameraViewTarget + GameData.Offset["TeamPtr"]);
+					if (Utils::ValidPtr(LocalPlayerState))
+					{
+						int StateTeamID = mem.Read<int>(LocalPlayerState + GameData.Offset["TeamNumber"]);
+						if (StateTeamID >= 0 && StateTeamID < 1000)
+							TeamID = StateTeamID;
+					}
 					GameData.CameraViewTarget = CacheCameraViewTarget;
 					GameData.LocalPlayerTeamID = (TeamID >= 100000) ? (TeamID - 100000) : TeamID;
+					GameData.LocalPlayerTeamObject = TeamObject;
 				}
 			}
 
