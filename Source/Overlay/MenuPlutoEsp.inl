@@ -54,6 +54,7 @@
 				ImGui::CheckboxWishTips(Languages == 1 ? U8("可视检测") : "Visibility Check", &GameData.Config.ESP.VisibleCheck, "Visibility Check");
 				ImGui::CheckboxWishTips(Languages == 1 ? U8("显示队友") : "Show Teammates", &GameData.Config.ESP.duiyou, "Show Teammates");
 				ImGui::Keybind(Languages == 1 ? U8("显示队友按键") : "Show Teammates Key", &GameData.Config.ESP.duiyouKey);
+				ImGui::CheckboxWishTips(Languages == 1 ? U8("显示死亡玩家") : "Show Dead", &GameData.Config.ESP.ShowDead, "Show Dead");
 			}
 			ImGui::EndChild(true);
 		}

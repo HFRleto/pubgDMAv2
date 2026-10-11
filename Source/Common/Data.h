@@ -1384,6 +1384,7 @@ struct FGameData
 			int AimbotHotkey = VK_F2;
 			int Playerskey = VK_F10;
 			bool duiyou = false;
+			bool ShowDead = false; // dessine le corps des joueurs morts tant que le jeu le garde
 			bool 等级 = true;
 			bool 击杀 = true;
 			bool 伤害 = true;

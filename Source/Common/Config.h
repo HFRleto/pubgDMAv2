@@ -321,6 +321,7 @@ public:
 			Config[ConfigName]["Display Frame"] = GameData.Config.ESP.DisplayFrame;
 			Config[ConfigName]["Show Teammates"] = GameData.Config.ESP.duiyouKey;
 			Config[ConfigName]["Show Teammates Enabled"] = GameData.Config.ESP.duiyou;
+			Config[ConfigName]["Show Dead"] = GameData.Config.ESP.ShowDead;
 			Config[ConfigName]["AimbotHotkey"] = GameData.Config.ESP.AimbotHotkey;
 			Config[ConfigName]["Playerskey"] = GameData.Config.ESP.Playerskey;
 			Config[ConfigName]["DataSwitchkey"] = GameData.Config.ESP.DataSwitchkey;
@@ -955,6 +956,7 @@ public:
 			SetConfigItem(Config, { ConfigName, "Display Frame" }, GameData.Config.ESP.DisplayFrame);
 			SetConfigItem(Config, { ConfigName, "Show Teammates" }, GameData.Config.ESP.duiyouKey);
 			SetConfigItem(Config, { ConfigName, "Show Teammates Enabled" }, GameData.Config.ESP.duiyou);
+			SetConfigItem(Config, { ConfigName, "Show Dead" }, GameData.Config.ESP.ShowDead);
 			SetConfigItem(Config, { ConfigName, "AimbotHotkey" }, GameData.Config.ESP.AimbotHotkey);
 			SetConfigItem(Config, { ConfigName, "Playerskey" }, GameData.Config.ESP.Playerskey);
 			SetConfigItem(Config, { ConfigName, "DataSwitchkey" }, GameData.Config.ESP.DataSwitchkey);

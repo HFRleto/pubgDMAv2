@@ -1903,7 +1903,8 @@ public:
             Player& Player = Item.second;
 
             // 基础过滤
-            if (Player.IsMe || (Player.IsMyTeam && !GameData.Config.ESP.duiyou) || (Player.State == CharacterState::Dead))
+            const bool IsDead = Player.State == CharacterState::Dead;
+            if (Player.IsMe || (Player.IsMyTeam && !GameData.Config.ESP.duiyou) || (IsDead && !GameData.Config.ESP.ShowDead))
             {
                 continue;
             }
@@ -1917,7 +1918,7 @@ public:
             }
 
             // 收集200米内敌人信息
-            if (Player.Distance <= 200 && !Player.IsMyTeam)
+            if (Player.Distance <= 200 && !Player.IsMyTeam && !IsDead)
             {
                 M200PlayerCount++;
                 if (PalyerBB > Player.Distance)
@@ -1947,6 +1948,27 @@ public:
             {
                 Player.Skeleton.LocationBones[Bone] = VectorHelper::GetBoneWithRotation(Player.Skeleton.Bones[Bone], PredictedCTW);
                 Player.Skeleton.ScreenBones[Bone] = VectorHelper::WorldToScreen(Player.Skeleton.LocationBones[Bone]);
+            }
+
+            // Corps d'un joueur mort (option "Show Dead") : squelette gris et etiquette, rien d'autre.
+            if (IsDead)
+            {
+                const ImColor DeadColor(140, 140, 140, 255);
+                if (GameData.Config.ESP.Skeleton)
+                {
+                    DrawSkeleton(Player, DeadColor, GameData.Config.ESP.SkeletonWidth);
+                }
+
+                const FVector2D DeadHead = Player.Skeleton.ScreenBones[EBoneIndex::ForeHead];
+                std::string DeadText = Utils::StringToUTF8(std::format(
+                    "[{}] {} [{}{}]",
+                    Localize("死亡", "Dead"),
+                    Player.Name,
+                    (int)Player.Distance,
+                    Localize("M", "M")
+                ));
+                RenderHelper::StrokeText(DeadText.c_str(), { DeadHead.X, DeadHead.Y - 19.0f }, DeadColor, GameData.Config.ESP.FontSize, true, false);
+                continue;
             }
 
             // 获取玩家颜色
