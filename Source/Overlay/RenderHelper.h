@@ -143,7 +143,15 @@ namespace RenderHelper {
 		auto infoColor = GameData.Config.ESP.Color.Default.Info;
 		auto skeletonColor = GameData.Config.ESP.Color.Default.Skeleton;
 
-		if (player.State == CharacterState::Groggy)
+		// Coequipier affiche (option "Show Teammates") : couleur fixe, distincte de toutes les autres categories.
+		static float teammateColor[4] = { 0.0f / 255.0f, 170.0f / 255.0f, 255.0f / 255.0f, 255.0f / 255.0f };
+
+		if (player.IsMyTeam)
+		{
+			infoColor = teammateColor;
+			skeletonColor = teammateColor;
+		}
+		else if (player.State == CharacterState::Groggy)
 		{
 			infoColor = GameData.Config.ESP.Color.Groggy.Info;
 			skeletonColor = GameData.Config.ESP.Color.Groggy.Skeleton;

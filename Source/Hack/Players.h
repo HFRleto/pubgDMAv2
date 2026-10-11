@@ -421,11 +421,8 @@ public:
 						Player.TeamID = Player.TeamIDFromState;
 
 					// 妫€鏌ョ帺瀹舵槸鍚︿负鏈槦鎴愬憳
-					if (GameData.Config.ESP.duiyou)
-					{
-						Player.IsMyTeam = false;
-					}
-					else if (Player.TeamID >= 0 && GameData.LocalPlayerTeamID >= 0)
+					// "Afficher les coequipiers" (ESP.duiyou) ne change que l'affichage : un coequipier reste un coequipier.
+					if (Player.TeamID >= 0 && GameData.LocalPlayerTeamID >= 0)
 					{
 						Player.IsMyTeam = Player.TeamID == GameData.LocalPlayerTeamID;
 					}
@@ -443,7 +440,7 @@ public:
 						RawLastTeamNum, RawStateTeamNumber, Player.PlayerState,
 						Player.TeamID, GameData.LocalPlayerTeamID,
 						(int)Player.IsMyTeam,
-						GameData.Config.ESP.duiyou ? "duiyou" : (Player.TeamID >= 0 && GameData.LocalPlayerTeamID >= 0) ? "id" : "aucun");
+						(Player.TeamID >= 0 && GameData.LocalPlayerTeamID >= 0) ? "id" : "aucun");
 
 
 					// 浠嶨amePlayerLists涓幏鍙栫帺瀹惰缁嗕俊鎭?
@@ -616,7 +613,7 @@ public:
 				}
 
 				// 濡傛灉鐜╁涓嶅湪灞忓箷涓婃垨鑰呮槸鑷繁鎴栬€呮槸鑷繁鐨勯槦鍙嬶紝璺宠繃璇ョ帺瀹?
-				if (!Player.InScreen || Player.IsMe || Player.IsMyTeam)
+				if (!Player.InScreen || Player.IsMe || (Player.IsMyTeam && !GameData.Config.ESP.duiyou))
 				{
 					continue;
 				}
@@ -774,7 +771,7 @@ public:
 					//	Player.Location.X+GameData.Radar.WorldOriginLocation.X, Player.Location.Y+ GameData.Radar.WorldOriginLocation.Y, Player.Location.Z+ GameData.Radar.WorldOriginLocation.Z);
 				}
 
-				if (!Player.InScreen || Player.IsMe || Player.IsMyTeam)
+				if (!Player.InScreen || Player.IsMe || (Player.IsMyTeam && !GameData.Config.ESP.duiyou))
 				{
 					continue; // 濡傛灉鐜╁涓嶅湪灞忓箷鍐呮垨鏄湰鍦扮帺瀹舵垨鏄湰闃熺帺瀹讹紝缁х画涓嬩竴娆″惊鐜?
 				}
@@ -787,7 +784,7 @@ public:
 				int32_t AimY = int32_t(abs(AimFov.Y - AmiMz.Pitch));
 
 				// 鍒ゆ柇鐜╁鏄惁鍦ㄧ瀯鍑嗚寖鍥村唴
-				if (AimX <= 2 && AimY <= 2)
+				if (AimX <= 2 && AimY <= 2 && !Player.IsMyTeam)
 				{
 					Player.IsAimMe = true;
 				}

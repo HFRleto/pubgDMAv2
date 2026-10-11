@@ -52,7 +52,8 @@
 				ImGui::Combo_popup(Languages == 1 ? U8("血条样式") : "Health Bar Style", &GameData.Config.ESP.血条样式, HealthBarStyleItems, IM_ARRAYSIZE(HealthBarStyleItems));
 				ImGui::CheckboxWishTips(Languages == 1 ? U8("文字阴影") : "Text Shadow", &GameData.Config.ESP.Stroke, "Text Shadow");
 				ImGui::CheckboxWishTips(Languages == 1 ? U8("可视检测") : "Visibility Check", &GameData.Config.ESP.VisibleCheck, "Visibility Check");
-				ImGui::Keybind(Languages == 1 ? U8("显示队友") : "Show Teammates", &GameData.Config.ESP.duiyouKey);
+				ImGui::CheckboxWishTips(Languages == 1 ? U8("显示队友") : "Show Teammates", &GameData.Config.ESP.duiyou, "Show Teammates");
+				ImGui::Keybind(Languages == 1 ? U8("显示队友按键") : "Show Teammates Key", &GameData.Config.ESP.duiyouKey);
 			}
 			ImGui::EndChild(true);
 		}

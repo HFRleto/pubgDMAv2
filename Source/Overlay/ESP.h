@@ -1903,7 +1903,7 @@ public:
             Player& Player = Item.second;
 
             // 基础过滤
-            if (Player.IsMe || Player.IsMyTeam || (Player.State == CharacterState::Dead))
+            if (Player.IsMe || (Player.IsMyTeam && !GameData.Config.ESP.duiyou) || (Player.State == CharacterState::Dead))
             {
                 continue;
             }
@@ -1917,7 +1917,7 @@ public:
             }
 
             // 收集200米内敌人信息
-            if (Player.Distance <= 200)
+            if (Player.Distance <= 200 && !Player.IsMyTeam)
             {
                 M200PlayerCount++;
                 if (PalyerBB > Player.Distance)
@@ -1958,7 +1958,7 @@ public:
                 (!GameData.Config.ESP.LockedHiddenBones ||
                     (GameData.AimBot.Target != Player.Entity || !GameData.AimBot.Lock)))
             {
-                if (GameData.Config.ESP.VisibleCheck)
+                if (GameData.Config.ESP.VisibleCheck && !Player.IsMyTeam)
                 {
                     if (Player.State == CharacterState::Groggy)
                     {
@@ -1996,14 +1996,14 @@ public:
                     {
                         PlayerColors.skeletonUseColor = Utils::FloatToImColor(GameData.Config.ESP.Color.aim.Skeleton);
                     }
-                    else if (!Player.IsVisible && Player.State != CharacterState::Groggy)
+                    else if (!Player.IsVisible && Player.State != CharacterState::Groggy && !Player.IsMyTeam)
                     {
                         PlayerColors.skeletonUseColor = Utils::FloatToImColor(GameData.Config.ESP.Color.Default.Skeleton);
                     }
                 }
 
                 // 根据距离和设置选择骨骼绘制方式
-                if (GameData.Config.ESP.AdjustableDistance)
+                if (GameData.Config.ESP.AdjustableDistance && !Player.IsMyTeam)
                 {
                     DrawSkeleton_Physx(Player, GameData.Config.ESP.SkeletonWidth); // 如果在可调距离范围内，则绘制骨骼
                 }
