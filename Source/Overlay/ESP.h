@@ -729,7 +729,7 @@ public:
         ImU32 visibleColor = ImGui::ColorConvertFloat4ToU32(Utils::FloatToImColor(GameData.Config.ESP.Color.Visible.Skeleton));
         ImU32 invisibleColor = ImGui::ColorConvertFloat4ToU32(Utils::FloatToImColor(GameData.Config.ESP.Color.Default.Skeleton));
 
-        if (Player.GroggyHealth < 99)
+        if (Player.State == CharacterState::Groggy)
         {
             ImU32 groggy = ImGui::ColorConvertFloat4ToU32(Utils::FloatToImColor(GameData.Config.ESP.Color.Groggy.Skeleton));
             ImU32 red = IM_COL32(255, 0, 0, 255);
@@ -1960,7 +1960,7 @@ public:
             {
                 if (GameData.Config.ESP.VisibleCheck)
                 {
-                    if (Player.GroggyHealth < 99)
+                    if (Player.State == CharacterState::Groggy)
                     {
                         ImColor groggy = Utils::FloatToImColor(GameData.Config.ESP.Color.Groggy.Skeleton);
                         ImColor red = ImColor(255, 0, 0, 255);
@@ -1996,7 +1996,7 @@ public:
                     {
                         PlayerColors.skeletonUseColor = Utils::FloatToImColor(GameData.Config.ESP.Color.aim.Skeleton);
                     }
-                    else if (!Player.IsVisible && !(Player.GroggyHealth < 99))
+                    else if (!Player.IsVisible && Player.State != CharacterState::Groggy)
                     {
                         PlayerColors.skeletonUseColor = Utils::FloatToImColor(GameData.Config.ESP.Color.Default.Skeleton);
                     }
@@ -2521,8 +2521,7 @@ public:
 
                 if (GameData.Config.ESP.Downed && bShowInfo &&
                     (Player.State == CharacterState::Groggy ||
-                     Player.CharacterState == ECharacterState::BeHit ||
-                     Player.GroggyHealth < 99)) {
+                     Player.CharacterState == ECharacterState::BeHit)) {
                     textBuilder.add(Localize("[倒地]", "[Downed]"));
                 }
 

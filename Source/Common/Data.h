@@ -547,9 +547,7 @@ struct Player
 	float Health = 0.0f;
 	float Distance = 0.0f;
 	float GroggyHealth = 0.0f;
-	float GroggyHealthMax = 0.0f;
 	uint32_t StateBitsRaw = 0;
-	uint8_t KilledBitsRaw = 0;
 	uint8_t DbnoUp = 0;
 	uint8_t DbnoAlive = 0;
 	uint8_t DbnoValid = 0;
@@ -577,7 +575,6 @@ struct Player
 	bool IsAimMe = false;
 	int TeamID = -100;
 	int TeamIDFromState = -100;
-	uint64_t TeamObject = 0;
 	bool IsMortar = false;
 	bool IsReloading = false;
 	FVector Velocity{};
@@ -1085,8 +1082,7 @@ struct FGameData
 	uint64_t LocalPlayerPawn;
 	uint64_t PlayerCameraManager;
 	uint64_t CameraViewTarget;
-	int LocalPlayerTeamID;
-	uint64_t LocalPlayerTeamObject = 0;
+	int LocalPlayerTeamID = -100; // inconnu tant que le joueur local n'a pas ete lu (0 est une equipe valide)
 	uint64_t CameraRootComponent;
 	FRotator ControlRotation;
 	FRotator RecoilRotation; // 后坐力旋转数据

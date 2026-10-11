@@ -26,6 +26,42 @@ class Players
 {
 public:
 
+	// Journal de diagnostic equipe / etat (players_debug.log), actif uniquement en mode diagnostic.
+	// Une ligne n'est ecrite que si elle differe de la derniere ligne ecrite pour la meme cle.
+	static void DebugLogOnChange(const std::string& Key, const char* format, ...)
+	{
+		if (!Utils::IsDiagnosticLoggingEnabled())
+			return;
+
+		char Line[1024];
+		va_list args;
+		va_start(args, format);
+		std::vsnprintf(Line, sizeof(Line), format, args);
+		va_end(args);
+
+		static std::mutex Mutex;
+		static std::unordered_map<std::string, std::string> LastLines;
+		static FILE* File = nullptr;
+		std::lock_guard<std::mutex> Lock(Mutex);
+
+		if (LastLines.size() > 8192)
+			LastLines.clear();
+		std::string& Last = LastLines[Key];
+		if (Last == Line)
+			return;
+		Last = Line;
+
+		if (!File)
+			File = _fsopen("players_debug.log", "w", _SH_DENYNO); // partage en lecture : le fichier peut etre suivi pendant l'execution
+		if (!File)
+			return;
+
+		SYSTEMTIME Now;
+		GetLocalTime(&Now);
+		std::fprintf(File, "%02d:%02d:%02d.%03d %s\n", Now.wHour, Now.wMinute, Now.wSecond, Now.wMilliseconds, Line);
+		std::fflush(File);
+	}
+
 	static void DecryptedFloat(float* a1, unsigned int a2, char a3) {
 		uint32_t v7[16] = { GameData.Offset["DecryptedHealthOffsets0"], GameData.Offset["DecryptedHealthOffsets1"], GameData.Offset["DecryptedHealthOffsets2"], GameData.Offset["DecryptedHealthOffsets3"],
 							GameData.Offset["DecryptedHealthOffsets4"], GameData.Offset["DecryptedHealthOffsets5"], GameData.Offset["DecryptedHealthOffsets6"], GameData.Offset["DecryptedHealthOffsets7"],
@@ -325,10 +361,8 @@ public:
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["Mesh"], (uint64_t*)&Player.MeshComponent);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["PlayerState"], (uint64_t*)&Player.PlayerState);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["GroggyHealth"], (float*)&Player.GroggyHealth);
-					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["DBNOHealthMax"], (float*)&Player.GroggyHealthMax);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["SpectatedCount"], (int*)&Player.SpectatedCount);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["LastTeamNum"], (int*)&Player.TeamID);
-					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["TeamPtr"], (uint64_t*)&Player.TeamObject);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["StateBits"], (uint32_t*)&Player.StateBitsRaw);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["bIsDBNO1"], (uint8_t*)&Player.DbnoUp);
 					mem.AddScatterRead(hScatter, Player.Entity + GameData.Offset["bIsDBNO2"], (uint8_t*)&Player.DbnoAlive);
@@ -354,11 +388,9 @@ public:
 
 					Player.PlayerState = Decrypt::Xe(Player.PlayerState);
 
-					if (Utils::ValidPtr(Player.PlayerState))
-					{
+					// Utils::ValidPtr renvoie true quand le pointeur est invalide
+					if (!Utils::ValidPtr(Player.PlayerState))
 						mem.AddScatterRead(hScatter, Player.PlayerState + GameData.Offset["TeamNumber"], (int*)&Player.TeamIDFromState);
-						mem.AddScatterRead(hScatter, Player.PlayerState + GameData.Offset["KilledBits"], (uint8_t*)&Player.KilledBitsRaw);
-					}
 
 					mem.AddScatterRead(hScatter, Player.pCharacterName, (FText*)&Player.CharacterName);
 					mem.AddScatterRead(hScatter, Player.MeshComponent + GameData.Offset["AnimScriptInstance"], (uint64_t*)&Player.AnimScriptInstance);
@@ -379,11 +411,13 @@ public:
 						Player.Entity == GameData.AcknowledgedPawn;
 
 					// 璋冩暣鍥㈤槦ID
+					const int RawLastTeamNum = Player.TeamID;
+					const int RawStateTeamNumber = Player.TeamIDFromState;
 					Player.TeamID = (Player.TeamID >= 100000) ? (Player.TeamID - 100000) : Player.TeamID;
 					Player.TeamIDFromState = (Player.TeamIDFromState >= 100000) ? (Player.TeamIDFromState - 100000) : Player.TeamIDFromState;
 
-					// TeamNumber (PlayerState) est la source nommee et fiable ; LastTeamNum n'est qu'un repli.
-					if (Player.TeamIDFromState >= 0 && Player.TeamIDFromState < 1000)
+					// LastTeamNum est la source verifiee en jeu ; TeamNumber (PlayerState) ne sert que de repli.
+					if ((Player.TeamID < 0 || Player.TeamID >= 1000) && Player.TeamIDFromState >= 0 && Player.TeamIDFromState < 1000)
 						Player.TeamID = Player.TeamIDFromState;
 
 					// 妫€鏌ョ帺瀹舵槸鍚︿负鏈槦鎴愬憳
@@ -397,13 +431,19 @@ public:
 					}
 					else
 					{
-						// Dernier repli : comparaison directe de l'objet Team partage par l'equipe.
-						Player.IsMyTeam = GameData.LocalPlayerTeamObject != 0 && Player.TeamObject != 0 &&
-							Player.TeamObject == GameData.LocalPlayerTeamObject;
+						Player.IsMyTeam = false;
 					}
 
 					// 灏嗙帺瀹跺悕绉拌浆鎹负ANSI鏍煎紡锛屽苟鍘婚櫎澶氫綑瀛楃
 					Player.Name = Utils::RemoveBracketsAndTrim(Utils::UnicodeToAnsi(Player.CharacterName.buffer));
+
+					DebugLogOnChange("T" + std::to_string(Player.Entity),
+						"[TEAM] ent=%llX name=%s me=%d | brut: lastTeamNum=%d teamNumber=%d (playerState=%llX) | retenu=%d | local: team=%d | myTeam=%d via=%s",
+						Player.Entity, Player.Name.c_str(), (int)Player.IsMe,
+						RawLastTeamNum, RawStateTeamNumber, Player.PlayerState,
+						Player.TeamID, GameData.LocalPlayerTeamID,
+						(int)Player.IsMyTeam,
+						GameData.Config.ESP.duiyou ? "duiyou" : (Player.TeamID >= 0 && GameData.LocalPlayerTeamID >= 0) ? "id" : "aucun");
 
 
 					// 浠嶨amePlayerLists涓幏鍙栫帺瀹惰缁嗕俊鎭?
@@ -625,18 +665,16 @@ public:
 
 				// 鍒濆鍖栫帺瀹剁殑鐬勫噯鐘舵€佸拰鐢熷瓨鐘舵€?
 				Player.IsAimMe = false;
-				// Etat du joueur : la vie n'est plus lisible cote client, on decide avec des drapeaux.
-				//   A) PlayerState::KilledBits  -> mort   (champ nomme, survit au despawn du corps)
-				//   B) pawn bIsDBNO1/2/0       -> up/alive
-				//   C) pawn StateBits 0x1B70   -> bit0 = DBNO, bit1 = dead
-				//   D) pawn GroggyHealth       -> DBNOHealth, > 0 uniquement quand le joueur est a terre
-				bool KilledByState = (Player.KilledBitsRaw & (uint8_t)GameData.Offset["KilledMask"]) != 0;
-				bool KilledByBits = (Player.StateBitsRaw & 0x2u) != 0;   // <--- retirer cette source si des joueurs vivants disparaissent
+				// Etat du joueur : la vie n'est plus lisible cote client (GroggyHealth reste a 100), on decide
+				// avec des drapeaux, tous verifies en jeu sur la version 2609.
+				//   A) pawn StateBits 0x1B70 -> bit0 = a terre, bit1 = mort
+				//   B) pawn bIsDBNO1/2       -> up/alive : 1/1 debout, 0/1 a terre, 0/0 mort (doublon de A)
+				bool KilledByBits = (Player.StateBitsRaw & 0x2u) != 0;
 				bool DbnoByBits = (Player.StateBitsRaw & 0x1u) != 0;
 				bool DbnoByFlags = (Player.DbnoUp == 0 && Player.DbnoAlive != 0);
 
-				bool IsDead = KilledByState || KilledByBits;
-				bool IsKnocked = !IsDead && (DbnoByBits || DbnoByFlags || Player.GroggyHealth > 0.0f);
+				bool IsDead = KilledByBits;
+				bool IsKnocked = !IsDead && (DbnoByBits || DbnoByFlags);
 
 				if (IsDead)
 				{
@@ -650,6 +688,16 @@ public:
 				{
 					Player.State = CharacterState::Alive;
 				}
+
+				DebugLogOnChange("S" + std::to_string(Player.Entity),
+					"[STATE] ent=%llX name=%s me=%d team=%d | brut: stateBits=0x%08X dbno(up/alive/valid)=%u/%u/%u groggy=%.0f health=%.0f charState=%d | mort: stateBits=%d | a terre: stateBits=%d dbnoFlags=%d | => %s",
+					Player.Entity, Player.Name.c_str(), (int)Player.IsMe, Player.TeamID,
+					Player.StateBitsRaw,
+					(unsigned)Player.DbnoUp, (unsigned)Player.DbnoAlive, (unsigned)Player.DbnoValid,
+					Player.GroggyHealth, Player.Health, (int)Player.CharacterState,
+					(int)KilledByBits,
+					(int)DbnoByBits, (int)DbnoByFlags,
+					IsDead ? "MORT" : IsKnocked ? "A TERRE" : "VIVANT");
 
 				// 鏍规嵁涓嶅悓鐨勭帺瀹剁姸鎬佽缃浄杈惧浘鏍?
 				if (Player.CharacterState == ECharacterState::Offline)
@@ -721,8 +769,7 @@ public:
 				if (Player.IsMe)
 				{
 					GameData.LocalPlayerInfo = Player; // 鏇存柊鏈湴鐜╁淇℃伅
-					GameData.LocalPlayerTeamID = Player.TeamID;
-					GameData.LocalPlayerTeamObject = Player.TeamObject; // 鏇存柊鏈湴鐜╁闃熶紞ID);
+					GameData.LocalPlayerTeamID = Player.TeamID; // 鏇存柊鏈湴鐜╁闃熶紞ID);
 					//printf("[LocalPlayer] Position: X=%.2f, Y=%.2f, Z=%.2f\n",
 					//	Player.Location.X+GameData.Radar.WorldOriginLocation.X, Player.Location.Y+ GameData.Radar.WorldOriginLocation.Y, Player.Location.Z+ GameData.Radar.WorldOriginLocation.Z);
 				}
@@ -791,7 +838,7 @@ public:
 					g_BoneSmoother.ClearEntityCache(Player.Entity);
 				}
 
-				if (GameData.LocalPlayerInfo.CurrentWeaponIndex != 255 && GameData.LocalPlayerInfo.CurrentWeaponIndex != 4)
+				// Trace de visibilite fait aussi sans arme en main : sinon tous les joueurs restent marques visibles.
 				{
 					if (Player.State == CharacterState::Alive || Player.State == CharacterState::Groggy)
 					{
@@ -807,6 +854,13 @@ public:
 						Player.Skeleton.VisibleBones[EBoneIndex::Neck_01] ||
 						Player.Skeleton.VisibleBones[EBoneIndex::Spine_03];
 				}
+
+				// Ce qui decide de la couleur a l'ecran (RenderHelper::GetPlayerColor).
+				DebugLogOnChange("C" + std::to_string(Player.Entity),
+					"[COLOR] ent=%llX name=%s team=%d | type=%s visible=%d kills=%d spectateurs=%d partnerLevel=%d listType=%d",
+					Player.Entity, Player.Name.c_str(), Player.TeamID,
+					Player.Type == EntityType::AI ? "AI" : Player.Type == EntityType::Player ? "Player" : "autre",
+					(int)Player.IsVisible, Player.KillCount, Player.SpectatedCount, (int)Player.PartnerLevel, (int)Player.ListType);
 
 				// 鑷瀯绛涢€?
 				if ((!GameData.AimBot.Lock || Utils::ValidPtr(GameData.AimBot.Target)) && !IsWheelKeyDown)

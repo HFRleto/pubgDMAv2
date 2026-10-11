@@ -43,9 +43,8 @@ namespace Offset
 	constexpr uint64_t CameraCacheRotation = 0x464;           // 2609 : SDK
 	constexpr uint64_t CameraCacheFOV = 0x470;                // 2609 : SDK
 
-	constexpr uint64_t LastTeamNum = 0x1E10;                  // 2609 : SDK ; valeur déduite par adjacency, source la moins fiable
-	constexpr uint64_t TeamNumber = 0xB80;                    // 2609 : SDK ; TslPlayerState::TeamNumber, source la plus fiable
-	constexpr uint64_t TeamPtr = 0x1E00;                      // 2609 : nouvelle liste ; pointeur d'objet Team partagé par une même équipe
+	constexpr uint64_t LastTeamNum = 0x1E10;                  // 2609 : SDK (ATslCharacter::LastTeamNum), vérifié en jeu ; source principale de l'équipe
+	constexpr uint64_t TeamNumber = 0xB80;                    // 2609 : SDK (ATslPlayerStateBase::TeamNumber), vérifié en jeu ; repli
 
 	constexpr uint64_t MyHUD = 0x4C8;                         // 2609 : SDK
 	constexpr uint64_t BlockInputWidgetList = 0x5C8;          // 2609 : SDK
@@ -94,10 +93,9 @@ namespace Offset
 	constexpr uint64_t Health_keys13 = 0x2935907;             // 2609 : script
 	constexpr uint64_t Health_keys14 = 0x59099E38;            // 2609 : script
 	constexpr uint64_t Health_keys15 = 0xF3C62AD8;            // 2609 : script
-	constexpr uint64_t GroggyHealth = 0x18C0;                 // 2609 : SDK (= DBNOHealth, seul float de vie encore lisible côté client)
-	constexpr uint64_t DBNOHealthMax = 0x1724;                // 2609 : nouvelle liste
+	constexpr uint64_t GroggyHealth = 0x18C0;                 // 2609 : SDK (ATslCharacter::DBNOHealth) ; reste à 100 en jeu quel que soit l'état, inutilisable pour détecter un joueur à terre
 	constexpr uint64_t HealthMax = 0xA50;                     // 2609 : nouvelle liste
-	constexpr uint64_t StateBits = 0x1B70;                    // 2609 : trouvé à la main, absent des deux listes ; bit0 = DBNO, bit1 = dead
+	constexpr uint64_t StateBits = 0x1B70;                    // 2609 : SDK (ATslCharacter::BitContainerNormalValue) ; bit0 = à terre, bit1 = mort, sens des bits vérifié en jeu
 	//constexpr uint64_t BlueBlockerGaugeTotalMax = 0x10; // inutilisé
 
 	constexpr uint64_t PlayerArray = 0x418;                   // 2609 : SDK
@@ -106,8 +104,6 @@ namespace Offset
 	constexpr uint64_t PlayerStatusType = 0x440;              // PAS À JOUR (valeur 2605)
 	constexpr uint64_t SquadMemberIndex = 0xBA8;              // 2609 : SDK
 	constexpr uint64_t PlayerState = 0x428;                   // 2609 : SDK
-	constexpr uint64_t KilledBits = 0xAD8;                    // 2609 : nouvelle liste ; TslPlayerStateBase::@OnRep_Killed, lisible même après despawn du corps
-	constexpr uint64_t KilledMask = 0x1;                      // 2609 : nouvelle liste
 	constexpr uint64_t PlayerStatistics = 0xA2C;              // PAS À JOUR (valeur 2605)
 	constexpr uint64_t DamageDealtOnEnemy = 0xAE4;            // 2609 : SDK
 	constexpr uint64_t SpectatedCount = 0x16C4;               // 2609 : SDK
@@ -193,9 +189,9 @@ namespace Offset
 
 	//constexpr uint64_t VTable = 0xA68; // inutilisé
 	//constexpr uint64_t bIsDBNO_CP = 0x931; // inutilisé
-	constexpr uint64_t bIsDBNO1 = 0x3588;                   // 2609 : nouvelle liste (structurel, à vérifier) ; up
-	constexpr uint64_t bIsDBNO2 = 0x3589;                   // 2609 : nouvelle liste (structurel, à vérifier) ; alive
-	constexpr uint64_t bIsDBNO0 = 0x358A;                   // 2609 : nouvelle liste (structurel, à vérifier) ; validator
+	constexpr uint64_t bIsDBNO1 = 0x3588;                   // 2609 : nouvelle liste, vérifié en jeu (nom masqué dans le SDK) ; up
+	constexpr uint64_t bIsDBNO2 = 0x3589;                   // 2609 : nouvelle liste, vérifié en jeu (nom masqué dans le SDK) ; alive
+	constexpr uint64_t bIsDBNO0 = 0x358A;                   // 2609 : nouvelle liste (nom masqué dans le SDK) ; validator, lu pour le journal seulement
 	constexpr uint64_t bIsScoping_CP = 0x865;                 // 2609 : SDK
 	//constexpr uint64_t bIsPreparingThrow_CP = 0x540; // inutilisé
 	//constexpr uint64_t bIsThrowing_CP = 0x938; // inutilisé
@@ -299,7 +295,6 @@ namespace Offset
 		//GameData.Offset["Health5"] = Health5; // inutilisé
 		//GameData.Offset["Health6"] = Health6; // inutilisé
 		GameData.Offset["GroggyHealth"] = GroggyHealth;
-		GameData.Offset["DBNOHealthMax"] = DBNOHealthMax;
 		GameData.Offset["HealthMax"] = HealthMax;
 		GameData.Offset["StateBits"] = StateBits;
 		//GameData.Offset["BlueBlockerGaugeTotalMax"] = BlueBlockerGaugeTotalMax; // inutilisé
@@ -357,15 +352,12 @@ namespace Offset
 		// --- Équipe / infos joueur ---
 		GameData.Offset["LastTeamNum"] = LastTeamNum;
 		GameData.Offset["TeamNumber"] = TeamNumber;
-		GameData.Offset["TeamPtr"] = TeamPtr;
 		GameData.Offset["PlayerArray"] = PlayerArray;
 		GameData.Offset["AccountId"] = AccountId;
 		GameData.Offset["PlayerName"] = PlayerName;
 		GameData.Offset["PlayerStatusType"] = PlayerStatusType;
 		GameData.Offset["SquadMemberIndex"] = SquadMemberIndex;
 		GameData.Offset["PlayerState"] = PlayerState;
-		GameData.Offset["KilledBits"] = KilledBits;
-		GameData.Offset["KilledMask"] = KilledMask;
 		GameData.Offset["PlayerStatistics"] = PlayerStatistics;
 		GameData.Offset["DamageDealtOnEnemy"] = DamageDealtOnEnemy;
 		GameData.Offset["SpectatedCount"] = SpectatedCount;

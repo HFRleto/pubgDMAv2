@@ -143,7 +143,7 @@ namespace RenderHelper {
 		auto infoColor = GameData.Config.ESP.Color.Default.Info;
 		auto skeletonColor = GameData.Config.ESP.Color.Default.Skeleton;
 
-		if (player.GroggyHealth < 99)
+		if (player.State == CharacterState::Groggy)
 		{
 			infoColor = GameData.Config.ESP.Color.Groggy.Info;
 			skeletonColor = GameData.Config.ESP.Color.Groggy.Skeleton;

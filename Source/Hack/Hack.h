@@ -166,16 +166,16 @@ public:
 				{
 					uint64_t LocalPlayerState = Decrypt::Xe(mem.Read<uint64_t>(CacheCameraViewTarget + GameData.Offset["PlayerState"]));
 					int TeamID = mem.Read<int>(CacheCameraViewTarget + GameData.Offset["LastTeamNum"]);
-					uint64_t TeamObject = mem.Read<uint64_t>(CacheCameraViewTarget + GameData.Offset["TeamPtr"]);
-					if (Utils::ValidPtr(LocalPlayerState))
+					TeamID = (TeamID >= 100000) ? (TeamID - 100000) : TeamID;
+					// LastTeamNum est la source verifiee en jeu ; TeamNumber (PlayerState) ne sert que de repli.
+					if ((TeamID < 0 || TeamID >= 1000) && !Utils::ValidPtr(LocalPlayerState))
 					{
 						int StateTeamID = mem.Read<int>(LocalPlayerState + GameData.Offset["TeamNumber"]);
 						if (StateTeamID >= 0 && StateTeamID < 1000)
 							TeamID = StateTeamID;
 					}
 					GameData.CameraViewTarget = CacheCameraViewTarget;
-					GameData.LocalPlayerTeamID = (TeamID >= 100000) ? (TeamID - 100000) : TeamID;
-					GameData.LocalPlayerTeamObject = TeamObject;
+					GameData.LocalPlayerTeamID = TeamID;
 				}
 			}
 
