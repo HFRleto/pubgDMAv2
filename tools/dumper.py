@@ -7,6 +7,7 @@ import argparse
 import ctypes
 import hashlib
 import json
+import re
 import struct
 import sys
 import time
@@ -75,27 +76,102 @@ SEARCH_TIMEOUT = 5
 # DMA / MEMORY
 # ---------------------------------------------------------------------------
 
+def _readable_ratio(proc, base: int, size: int, samples: int = 100) -> int:
+    """Nombre de pages lisibles et non vides sur un echantillon du module."""
+    ok = 0
+    step = max(size // samples, 0x1000)
+    for off in range(0x1000, size, step):
+        try:
+            data = bytes(proc.memory.read(base + off, 0x10, memprocfs.FLAG_NOCACHE))
+            if data and any(data):
+                ok += 1
+        except Exception:
+            pass
+    return ok
+
+
 def initialize(process_name: str = "TslGame.exe", device: str = "fpga") -> None:
     global process, module, vmm, BASE, PROCESS_NAME
 
     PROCESS_NAME = process_name
     vmm = memprocfs.Vmm(["-device", device, "-memmap", "auto", "-disable-symbolserver"])
-    process = vmm.process(process_name)
 
-    if not process:
+    # Le jeu lance deux processus du meme nom : un parent presque vide et le vrai. On garde celui
+    # dont le module est le plus lisible, sinon toutes les signatures echouent.
+    best = None
+    for proc in vmm.process_list():
+        if proc.name.lower() != process_name.lower():
+            continue
+        try:
+            mod = proc.module(process_name)
+            base = int(mod.base)
+            hdr = bytes(proc.memory.read(base, 0x1000))
+            e_lfanew = struct.unpack_from("<I", hdr, 0x3C)[0]
+            size = struct.unpack_from("<I", hdr, e_lfanew + 24 + 56)[0]
+            score = _readable_ratio(proc, base, size)
+        except Exception:
+            continue
+        log(f"[*] {process_name}  PID={proc.pid}  pages lisibles={score}/100")
+        if best is None or score > best[0]:
+            best = (score, proc, mod)
+
+    if best is None:
         raise RuntimeError(f"{process_name} not found")
 
-    module = process.module(process_name)
-    if not module:
-        raise RuntimeError(f"{process_name} module not found")
-
+    _, process, module = best
     BASE = int(module.base)
     log(f"[+] {process_name}  PID={process.pid}  Base=0x{BASE:X}")
+
+
+# ---------------------------------------------------------------------------
+# COPIE LOCALE DE L'IMAGE (recherche hors ligne)
+# ---------------------------------------------------------------------------
+
+IMAGE: Optional[bytes] = None
+
+
+def save_image(path: Path) -> None:
+    """Copie le module du jeu dans un fichier, avec sa base dans <fichier>.json."""
+    size = get_module_size()
+    if size <= 0:
+        raise RuntimeError("module size unavailable")
+
+    chunk = 0x100000
+    flags = memprocfs.FLAG_NOCACHE | memprocfs.FLAG_ZEROPAD_ON_FAIL
+    with open(path, "wb") as f:
+        for off in range(0, size, chunk):
+            n = min(chunk, size - off)
+            try:
+                data = bytes(process.memory.read(BASE + off, n, flags))
+            except Exception:
+                data = b""
+            if len(data) != n:
+                data = data[:n].ljust(n, b"\x00")
+            f.write(data)
+            if off % (64 * chunk) == 0:
+                log(f"[*] image : {off // chunk} / {size // chunk} Mo")
+
+    Path(str(path) + ".json").write_text(json.dumps({"base": BASE, "size": size, "pid": process.pid}))
+    log_ok(f"[+] Image : {path}")
+
+
+def load_image(path: Path) -> None:
+    """Redirige toutes les lectures et recherches vers une copie faite par save_image."""
+    global IMAGE, BASE
+
+    BASE = json.loads(Path(str(path) + ".json").read_text())["base"]
+    IMAGE = path.read_bytes()
+    log(f"[+] Image locale {path}  Base=0x{BASE:X}  {len(IMAGE) >> 20} Mo")
 
 
 def read_mem(addr: int, size: int) -> Optional[bytes]:
     if size <= 0:
         return b""
+    if IMAGE is not None:
+        off = addr - BASE
+        if off < 0 or off >= len(IMAGE):
+            return None
+        return IMAGE[off:off + size]
     try:
         data = process.memory.read(addr, size)
         if not data:
@@ -341,6 +417,22 @@ def get_module_size() -> int:
 
 def search_signature(signature: str) -> List[int]:
     pattern, mask = parse_signature(signature)
+
+    if IMAGE is not None:
+        regex = re.compile(
+            b"".join(b"." if m else re.escape(bytes([p])) for p, m in zip(pattern, mask)),
+            re.DOTALL,
+        )
+        matches = []
+        pos = 0
+        while len(matches) < 5000:
+            found = regex.search(IMAGE, pos)
+            if not found:
+                break
+            matches.append(BASE + found.start())
+            pos = found.start() + 1
+        return matches
+
     if len(pattern) > 32:
         log_warn(f"[!] Signature {len(pattern)} bytes, using segmented search...")
         pattern_part = pattern[:32]
@@ -402,8 +494,14 @@ def search_signature(signature: str) -> List[int]:
         return []
 
 
+LAST_MATCH_COUNT = 0
+
+
 def scan_one(signature: str) -> Optional[int]:
+    global LAST_MATCH_COUNT
+
     matches = search_signature(signature)
+    LAST_MATCH_COUNT = len(matches)
     return matches[0] if matches else None
 
 
@@ -1191,7 +1289,15 @@ def scan_all_offsets() -> Dict[str, int]:
 
         if value is not None:
             result[name] = value
-            log_ok(f"[+] {name:<30} = 0x{value:X}")
+            # Deux raisons de ne pas croire un [+] sur parole : la signature contient deja la valeur
+            # (aucun octet libre) ou elle correspond a plusieurs endroits du code.
+            notes = []
+            if kind == "disp" and "?" not in signature:
+                notes.append("valeur figee")
+            if kind != "imm" and LAST_MATCH_COUNT > 1:
+                notes.append(f"{LAST_MATCH_COUNT} correspondances")
+            suffix = f"   ({', '.join(notes)})" if notes else ""
+            log_ok(f"[+] {name:<30} = 0x{value:X}{suffix}")
         else:
             log_err(f"[-] {name:<30} MISS")
 
@@ -1392,13 +1498,20 @@ def main() -> None:
     parser.add_argument("-o", "--output", default="./out")
     parser.add_argument("--no-dump", action="store_true")
     parser.add_argument("--json", action="store_true", help="Also generate JSON output")
+    parser.add_argument("--image", help="Copie locale de l'image du jeu : utilisee si elle existe, sinon creee par la carte DMA puis utilisee")
     args = parser.parse_args()
 
     out_dir = Path(args.output)
     out_dir.mkdir(parents=True, exist_ok=True)
 
+    image_path = Path(args.image) if args.image else None
     try:
-        initialize(args.process, args.device)
+        if image_path is None or not image_path.exists():
+            initialize(args.process, args.device)
+            if image_path is not None:
+                save_image(image_path)
+        if image_path is not None:
+            load_image(image_path)
     except Exception as exc:
         fail(f"Init error: {exc}")
         return
@@ -1456,8 +1569,12 @@ def main() -> None:
 
     log_ok(f"[+] Resolved: {len(offsets)} offsets, {len(decrypt_methods)} decrypt metod")
 
-    log_warn("\n[+] Done. Press Enter to exit...")
-    input()
+    # Pas de pause quand la sortie est redirigee dans un fichier : personne ne verrait l'invite.
+    if sys.stdin.isatty() and sys.stdout.isatty():
+        log_warn("\n[+] Done. Press Enter to exit...")
+        input()
+    else:
+        log_ok("[+] Done.")
 
 
 if __name__ == "__main__":

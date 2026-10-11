@@ -64,6 +64,7 @@ SPEC = {
     'InventoryFacade': 'ATslCharacter::InventoryFacade',
     'VehicleRiderComponent': 'ATslCharacter::VehicleRiderComponent',
     'GroggyHealth': 'ATslCharacter::GroggyHealth|DBNOHealth',
+    'StateBits': 'ATslCharacter::BitContainerNormalValue',
     # etat du joueur
     'PlayerName': 'APlayerState::PlayerName',
     'AccountId': 'ATslPlayerStateBase::AccountId',
